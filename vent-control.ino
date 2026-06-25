@@ -89,7 +89,7 @@ uint32_t cntr = 0;
 char str[128];
 
 // Обработчик нажатия на кнопку
-static void button_event_cb(lv_event_t * e) {
+void action_increaseCntr(lv_event_t * e) {
   if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
       Serial.println("Кнопка успешно нажата пальцем!");
       cntr++;
@@ -99,6 +99,11 @@ static void button_event_cb(lv_event_t * e) {
   }
 }
 
+void action_change_brightness(lv_event_t * e)
+{
+  Serial.println("Яркость изменяется");
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
@@ -106,7 +111,7 @@ void setup() {
   // --- Инициализация тачскрина ---
   ts.begin();
   // Если нажатия будут инвертированы по осям, эти параметры можно изменить (setRotation)
-  ts.setRotation(ROTATION_NORMAL); 
+  ts.setRotation(ROTATION_INVERTED);
 
   if (!gfx.begin(16000000)) { 
       Serial.println("❌ КРИТИЧЕСКАЯ ОШИБКА: RGB Panel не отвечает.");
