@@ -27,6 +27,17 @@ void platform_can_init()
   twai_start();
 }
 
+uint32_t platform_can_poll(uint32_t bus_id)
+{
+	twai_message_t message = {};
+	if(twai_receive(&message, pdMS_TO_TICKS(0)) == ESP_OK)
+	{
+		platform_can_msg_recieve(bus_id, &message);
+		return 1;
+	}
+	return 0;
+}
+
 void platform_can_init_rx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc)
 {
 	uint32_t mask_or_id;
@@ -67,7 +78,7 @@ void platform_can_xmit_mb(uint32_t bus_id, uint32_t mbn, uint64_t msg)
 
 void platform_can_dyn_xmit_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc, uint64_t msg)
 {
-	twai_message_t twai_message;
+	twai_message_t twai_message = {};
 
 	// for standart ID
 	twai_message.identifier = id;

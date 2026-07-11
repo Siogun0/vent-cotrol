@@ -4,7 +4,6 @@
  *  Created on: Dec 3, 2021
  *      Author: arh
  */
-
 #ifndef INC_CAN_PLATFORM_H_
 #define INC_CAN_PLATFORM_H_
 
@@ -18,6 +17,7 @@
 #define CAN_BUS_MAX     1
 #define VIRT_MBX_MAX    14
 
+
 typedef struct
 {
 	uint32_t id;
@@ -30,6 +30,8 @@ typedef struct
 void platform_can_msg_recieve(uint32_t bus_id, const twai_message_t* twai_message);
 
 void platform_can_init(void);
+
+uint32_t platform_can_poll(uint32_t bus_id);
 
 void platform_can_init_rx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc);
 
@@ -46,5 +48,6 @@ uint32_t platform_can_get_mb_dlc(uint32_t bus_id, uint32_t mbn);
 uint32_t platform_can_is_message_arrived(uint32_t bus_id, uint32_t mbn);
 
 uint32_t platform_can_is_message_sent(uint32_t bus_id, uint32_t mbn);
+
 
 #endif /* INC_CAN_PLATFORM_H_ */
