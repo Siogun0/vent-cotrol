@@ -10,6 +10,8 @@ extern "C" {
 #include "src/ui/actions.h"
 #include "src/ui/screens.h"
 
+#include "esp_timer.h"
+
 volatile t_can_node_panel_bus0_input can_in;
 volatile t_can_node_panel_bus0_output can_out;
 unsigned long time_stamp;
@@ -119,6 +121,10 @@ void action_change_brightness(lv_event_t * e)
   int slider_value = lv_slider_get_value(slider);
 
   ledcWrite(GFX_BL, slider_value);
+  can_out.CTRL_VALVE.VALVE_1_REQ = slider_value;
+  can_out.CTRL_VALVE.VALVE_2_REQ = slider_value;
+  can_out.CTRL_VALVE.VALVE_3_REQ = slider_value;
+  can_out.CTRL_VALVE.VALVE_4_REQ = slider_value;
 }
 
 void setup() {
@@ -126,6 +132,7 @@ void setup() {
 
   platform_can_init();
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
+  can_timer_init();
 
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
 
@@ -194,34 +201,10 @@ void loop() {
   }
   can_node_panel_bus0_rx(&can_in);
   can_node_panel_bus0_tx(&can_out);
-  can_node_panel_bus0_update_timers((millis() - time_stamp) * 1300);
-  time_stamp = millis();
-}
 
-// Функция для отправки сообщения
-void sendCanMessage() {
-  twai_message_t tx_msg = {};
-  
-  tx_msg.identifier = 0x123;           // ID сообщения (в формате HEX)
-  tx_msg.extd = 0;                     // 0 = стандартный ID (11 бит), 1 = расширенный (29 бит)
-  tx_msg.rtr = 0;                      // 0 = обычный кадр данных, 1 = запрос удаленной передачи (RTR)
-  tx_msg.data_length_code = 8;         // Количество байт данных (от 0 до 8)
-  
-  // Заполняем массив данных (максимум 8 байт)
-  tx_msg.data[0] = 0xAA;
-  tx_msg.data[1] = 0xBB;
-  tx_msg.data[2] = 0xCC;
-  tx_msg.data[3] = 0xDD;
-
-  // Отправка сообщения (таймаут ожидания свободной шины 100 мс)
-  esp_err_t result = twai_transmit(&tx_msg, pdMS_TO_TICKS(0));
-  
-  if (result == ESP_OK) {
-    Serial.println("Сообщение успешно отправлено в шину!");
-  } else {
-    Serial.print("Ошибка отправки! Код ошибки: ");
-    Serial.println(result);
-  }
+  //test
+  sprintf(str, "Reseived %d", can_in.VALVE_STATUS.CPU_TEMP);
+  if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
 }
 
 // === ОБРАБОТЧИК СВАЙПОВ ===
@@ -246,4 +229,21 @@ void action_to_mian(lv_event_t *e) {
       Serial.println("Свайп снизу вверх");
       break;
   }
+}
+
+// Функции таймеров
+void can_timer_init(void)
+{
+  const esp_timer_create_args_t can_timer_args = {
+    .callback = &can_timer_update,  // Указываем нашу функцию
+    .name = "1 ms CAN timer"        // Имя таймера для отладки
+  };
+  esp_timer_handle_t can_timer;
+  esp_timer_create(&can_timer_args, &can_timer);
+  esp_timer_start_periodic(can_timer, 1000);
+}
+
+void can_timer_update(void *arg)
+{
+  can_node_panel_bus0_update_timers(1000);
 }
