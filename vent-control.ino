@@ -2,6 +2,17 @@
 #include <Arduino_GFX_Library.h>
 #include <Wire.h>
 #include <TAMC_GT911.h>
+extern "C" {
+#include "can_platform.h"
+#include "can_node_panel_bus0.h"
+}
+#include "src/ui/ui.h" // Подключение сгенерированного UI
+#include "src/ui/actions.h"
+#include "src/ui/screens.h"
+
+volatile t_can_node_panel_bus0_input can_in;
+volatile t_can_node_panel_bus0_output can_out;
+unsigned long time_stamp;
 
 // --- УПРАВЛЕНИЕ ПОДСВЕТКОЙ через PWM (LEDC) ---
 #define GFX_BL 38      // Пин, подключенный к подсветке
@@ -53,10 +64,6 @@ Arduino_RGB_Display gfx = Arduino_RGB_Display(
 
 // static uint8_t *disp_draw_buf = nullptr;
 uint8_t disp_draw_buf[DISP_DRAW_BUF_SIZE] = {};
-static lv_obj_t *btn_label = nullptr;
-
-// Системное время LVGL v9
-static uint32_t my_tick_get_cb(void) { return millis(); }
 
 // Функция отрисовки фрейма
 void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
@@ -89,23 +96,37 @@ uint32_t cntr = 0;
 char str[128];
 
 // Обработчик нажатия на кнопку
-void action_increaseCntr(lv_event_t * e) {
-  if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
+void action_increase_cntr(lv_event_t * e) {
+  // if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
       Serial.println("Кнопка успешно нажата пальцем!");
       cntr++;
       sprintf(str, "Clicked %d", cntr);
-      if(btn_label) lv_label_set_text(btn_label, str);
-      ledcWrite(GFX_BL, (cntr * 10) & 0xFF);
-  }
+      if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
+
+  // }
+}
+
+void action_to_settings(lv_event_t *e) {
+  loadScreen(SCREEN_ID_SETTINGS);
 }
 
 void action_change_brightness(lv_event_t * e)
 {
-  Serial.println("Яркость изменяется");
+  // Получаем указатель на сам слайдер, который вызвал событие
+  lv_obj_t * slider = (lv_obj_t*)lv_event_get_target(e);
+  
+  // Считываем его текущее числовое значение (int)
+  int slider_value = lv_slider_get_value(slider);
+
+  ledcWrite(GFX_BL, slider_value);
 }
 
 void setup() {
   Serial.begin(115200);
+
+  platform_can_init();
+  can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
+
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
 
   // --- Инициализация тачскрина ---
@@ -144,19 +165,85 @@ void setup() {
   lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
   lv_indev_set_read_cb(indev, my_touchpad_read);
 
-  // Создание интерфейса кнопки на экране через LVGL v9
-  lv_obj_t * btn = lv_button_create(lv_screen_active());
-  lv_obj_set_size(btn, 240, 80);
-  lv_obj_center(btn);
-  lv_obj_add_event_cb(btn, button_event_cb, LV_EVENT_ALL, NULL);
+  // // Создание интерфейса кнопки на экране через LVGL v9
+  // lv_obj_t * btn = lv_button_create(lv_screen_active());
+  // lv_obj_set_size(btn, 240, 80);
+  // lv_obj_center(btn);
+  // lv_obj_add_event_cb(btn, button_event_cb, LV_EVENT_ALL, NULL);
 
-  btn_label = lv_label_create(btn);
-  lv_label_set_text(btn_label, "Hello World");
-  lv_obj_center(btn_label);
+  // btn_label = lv_label_create(btn);
+  // lv_label_set_text(btn_label, "Hello World");
+  // lv_obj_center(btn_label);
 
   Serial.println("🎉 Система успешно запущена с тачскрином!");
+  ui_init(); // Запуск графического интерфейса EEZ
+
+  // Принудительно назначаем обработчик событий на наш экран
+  // (Переменная ui_main_screen или objects.main_screen зависит от версии EEZ Studio)
+  // lv_obj_add_event_cb(objects.settings, my_swipe_event_handler, LV_EVENT_GESTURE, NULL);
+  time_stamp = millis();
 }
 
 void loop() {
   lv_timer_handler_run_in_period(5); 
+  
+
+  if(platform_can_poll(0))
+  {
+    //CAN ACTIVE
+  }
+  can_node_panel_bus0_rx(&can_in);
+  can_node_panel_bus0_tx(&can_out);
+  can_node_panel_bus0_update_timers((millis() - time_stamp) * 1300);
+  time_stamp = millis();
+}
+
+// Функция для отправки сообщения
+void sendCanMessage() {
+  twai_message_t tx_msg = {};
+  
+  tx_msg.identifier = 0x123;           // ID сообщения (в формате HEX)
+  tx_msg.extd = 0;                     // 0 = стандартный ID (11 бит), 1 = расширенный (29 бит)
+  tx_msg.rtr = 0;                      // 0 = обычный кадр данных, 1 = запрос удаленной передачи (RTR)
+  tx_msg.data_length_code = 8;         // Количество байт данных (от 0 до 8)
+  
+  // Заполняем массив данных (максимум 8 байт)
+  tx_msg.data[0] = 0xAA;
+  tx_msg.data[1] = 0xBB;
+  tx_msg.data[2] = 0xCC;
+  tx_msg.data[3] = 0xDD;
+
+  // Отправка сообщения (таймаут ожидания свободной шины 100 мс)
+  esp_err_t result = twai_transmit(&tx_msg, pdMS_TO_TICKS(0));
+  
+  if (result == ESP_OK) {
+    Serial.println("Сообщение успешно отправлено в шину!");
+  } else {
+    Serial.print("Ошибка отправки! Код ошибки: ");
+    Serial.println(result);
+  }
+}
+
+// === ОБРАБОТЧИК СВАЙПОВ ===
+void action_to_mian(lv_event_t *e) {
+  // Получаем направление свайпа
+  lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
+  loadScreen(SCREEN_ID_MAIN);
+  switch(dir) {
+    case LV_DIR_LEFT:
+      loadScreen(SCREEN_ID_MAIN);
+      break;
+      
+    case LV_DIR_RIGHT:
+      loadScreen(SCREEN_ID_MAIN);
+      break;
+      
+    case LV_DIR_BOTTOM:
+      Serial.println("Свайп сверху вниз");
+      break;
+      
+    case LV_DIR_TOP:
+      Serial.println("Свайп снизу вверх");
+      break;
+  }
 }
