@@ -10,6 +10,7 @@ extern "C" {
 #include "src/ui/ui.h" // Подключение сгенерированного UI
 #include "src/ui/actions.h"
 #include "src/ui/screens.h"
+#include "src/ui/vars.h"
 
 #include "esp_timer.h"
 
@@ -20,35 +21,35 @@ unsigned long time_stamp;
 uint32_t cntr = 0;
 char str[128];
 
-// Обработчик нажатия на кнопку
-void action_increase_cntr(lv_event_t * e) {
-  // if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
-      Serial.println("Кнопка успешно нажата пальцем!");
-      cntr++;
-      sprintf(str, "Clicked %d", cntr);
-      if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
+// // Обработчик нажатия на кнопку
+// void action_increase_cntr(lv_event_t * e) {
+//   // if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
+//       Serial.println("Кнопка успешно нажата пальцем!");
+//       cntr++;
+//       sprintf(str, "Clicked %d", cntr);
+//       if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
 
-  // }
-}
+//   // }
+// }
 
-void action_to_settings(lv_event_t *e) {
-  loadScreen(SCREEN_ID_SETTINGS);
-}
+// void action_to_settings(lv_event_t *e) {
+//   loadScreen(SCREEN_ID_SETTINGS);
+// }
 
-void action_change_brightness(lv_event_t * e)
-{
-  // Получаем указатель на сам слайдер, который вызвал событие
-  lv_obj_t * slider = (lv_obj_t*)lv_event_get_target(e);
+// void action_change_brightness(lv_event_t * e)
+// {
+//   // Получаем указатель на сам слайдер, который вызвал событие
+//   lv_obj_t * slider = (lv_obj_t*)lv_event_get_target(e);
   
-  // Считываем его текущее числовое значение (int)
-  int slider_value = lv_slider_get_value(slider);
+//   // Считываем его текущее числовое значение (int)
+//   int slider_value = lv_slider_get_value(slider);
 
-  ledcWrite(GFX_BL, slider_value);
-  can_out.CTRL_VALVE.VALVE_1_REQ = slider_value;
-  can_out.CTRL_VALVE.VALVE_2_REQ = slider_value;
-  can_out.CTRL_VALVE.VALVE_3_REQ = slider_value;
-  can_out.CTRL_VALVE.VALVE_4_REQ = slider_value;
-}
+//   ledcWrite(GFX_BL, slider_value);
+//   can_out.CTRL_VALVE.VALVE_1_REQ = slider_value;
+//   can_out.CTRL_VALVE.VALVE_2_REQ = slider_value;
+//   can_out.CTRL_VALVE.VALVE_3_REQ = slider_value;
+//   can_out.CTRL_VALVE.VALVE_4_REQ = slider_value;
+// }
 
 void setup() {
   Serial.begin(115200);
@@ -72,14 +73,15 @@ void setup() {
   lv_indev_set_read_cb(indev, my_touchpad_read);
 
   // Запуск графического интерфейса EEZ
-  ui_init(); 
+  ui_init();
+  screen_timer_init();
 
-  time_stamp = millis();
   Serial.println("🎉 Система успешно запущена!");
 }
 
 void loop() {
-  lv_timer_handler_run_in_period(5); 
+  lv_timer_handler_run_in_period(5);
+  ui_tick();
 
   if(platform_can_poll(0))
   {
@@ -87,35 +89,52 @@ void loop() {
   }
   can_node_panel_bus0_rx(&can_in);
   can_node_panel_bus0_tx(&can_out);
-
-  //test
-  sprintf(str, "Reseived %d", can_in.VALVE_STATUS.CPU_TEMP);
-  if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
 }
+
+// === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
+void action_connect_wifi(lv_event_t *e) {
+    // TODO: Implement action connect_wifi here
+}
+
+
+// Native global variables
+
+int32_t get_var_can_status() {
+  return 1;
+}
+void set_var_can_status(int32_t value) {}
+int32_t get_var_wifi_status() {
+  return 1;
+}
+void set_var_wifi_status(int32_t value) {}
+int32_t get_var_bt_status() {
+  return 1;
+}
+void set_var_bt_status(int32_t value) {}
 
 // === ОБРАБОТЧИК СВАЙПОВ ===
-void action_to_mian(lv_event_t *e) {
-  // Получаем направление свайпа
-  lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
-  loadScreen(SCREEN_ID_MAIN);
-  switch(dir) {
-    case LV_DIR_LEFT:
-      loadScreen(SCREEN_ID_MAIN);
-      break;
+// void action_to_mian(lv_event_t *e) {
+//   // Получаем направление свайпа
+//   lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
+//   loadScreen(SCREEN_ID_MAIN);
+//   switch(dir) {
+//     case LV_DIR_LEFT:
+//       loadScreen(SCREEN_ID_MAIN);
+//       break;
       
-    case LV_DIR_RIGHT:
-      loadScreen(SCREEN_ID_MAIN);
-      break;
+//     case LV_DIR_RIGHT:
+//       loadScreen(SCREEN_ID_MAIN);
+//       break;
       
-    case LV_DIR_BOTTOM:
-      Serial.println("Свайп сверху вниз");
-      break;
+//     case LV_DIR_BOTTOM:
+//       Serial.println("Свайп сверху вниз");
+//       break;
       
-    case LV_DIR_TOP:
-      Serial.println("Свайп снизу вверх");
-      break;
-  }
-}
+//     case LV_DIR_TOP:
+//       Serial.println("Свайп снизу вверх");
+//       break;
+//   }
+// }
 
 // Функции таймеров
 void can_timer_init(void)
@@ -134,3 +153,18 @@ void can_timer_update(void *arg)
   can_node_panel_bus0_update_timers(1000);
 }
 
+void screen_timer_init(void)
+{
+  const esp_timer_create_args_t screen_timer_args = {
+    .callback = &screen_timer_update,  // Указываем нашу функцию
+    .name = "100 ms Screen timer"      // Имя таймера для отладки
+  };
+  esp_timer_handle_t screen_timer;
+  esp_timer_create(&screen_timer_args, &screen_timer);
+  esp_timer_start_periodic(screen_timer, 100000);
+}
+
+void screen_timer_update(void *arg)
+{
+
+}
