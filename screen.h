@@ -35,7 +35,7 @@ Arduino_ESP32RGBPanel rgb_panel = Arduino_ESP32RGBPanel(
   /* hsync_pol, hfp, hpw, hbp */ 1, 10, 8, 50,  // горизонтальные параметры
   /* vsync_pol, vfp, vpw, vbp */ 1, 10, 8, 20,  // вертикальные параметры
   /* pclk_active_neg */ 0,                      // полярность PCLK (тактового сигнала пикселей)
-  /* prefer_speed */ 16000000,                  // частота тактового сигнала пикселей
+  /* prefer_speed */ 12000000,                  // частота тактового сигнала пикселей
   /* big_endian */ false,                       // стандартный порядок байт
   /* de_idle_high, pclk_idle_high, bounce_buf */ 0, 0, 0
   );
@@ -87,7 +87,7 @@ void screen_init(void)
   // Если нажатия будут инвертированы по осям, эти параметры можно изменить (setRotation)
   ts.setRotation(ROTATION_INVERTED);
 
-  if (!gfx.begin(16000000)) { 
+  if (!gfx.begin()) {
       Serial.println("❌ КРИТИЧЕСКАЯ ОШИБКА: RGB Panel не отвечает.");
   }
 
