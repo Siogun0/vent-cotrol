@@ -25,8 +25,9 @@ typedef struct _objects_t {
     lv_obj_t *status_bar__wi_fi;
     lv_obj_t *status_bar__bluetooth;
     lv_obj_t *status_bar__temperature;
-    lv_obj_t *status_bar__degree;
     lv_obj_t *status_bar__humidity;
+    lv_obj_t *status_bar__power_param;
+    lv_obj_t *background_image;
     lv_obj_t *obj0;
     lv_obj_t *valve1;
     lv_obj_t *obj1;
@@ -37,16 +38,19 @@ typedef struct _objects_t {
     lv_obj_t *valve4;
     lv_obj_t *obj4;
     lv_obj_t *valve5;
-    lv_obj_t *valve6;
     lv_obj_t *obj5;
-    lv_obj_t *ssid_text;
+    lv_obj_t *valve6;
     lv_obj_t *obj6;
-    lv_obj_t *password_text;
     lv_obj_t *obj7;
-    lv_obj_t *conect_wifi;
+    lv_obj_t *ssid_text;
     lv_obj_t *obj8;
-    lv_obj_t *keyboard;
+    lv_obj_t *password_text;
+    lv_obj_t *obj9;
+    lv_obj_t *conect_wifi;
+    lv_obj_t *obj10;
     lv_obj_t *ip_address;
+    lv_obj_t *power_data_hiden;
+    lv_obj_t *keyboard;
 } objects_t;
 
 extern objects_t objects;

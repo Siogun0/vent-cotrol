@@ -25,6 +25,12 @@ volatile t_can_node_panel_bus0_output can_out;
 const char* ntpServer = "pool.ntp.org";
 const char* timeZone = "MSK-3";
 
+// === Native global variable ===
+char ip_address[] = "---.---.---.---";
+status_color can_status = status_color_GREY;
+status_color wifi_status = status_color_GREY;
+status_color bt_status = status_color_GREY;
+
 int status_bar_update_req = 0;
 
 void setup() {
@@ -52,6 +58,7 @@ void setup() {
   ui_init();
   // Принудительно забираем StatusBar у экрана и отдаем его верхнему слою LVGL
   lv_obj_set_parent(objects.status_bar, lv_layer_top()); 
+  lv_obj_set_parent(objects.background_image, lv_layer_bottom()); 
   screen_timer_init();
 
   WiFi.begin();
@@ -74,14 +81,33 @@ void loop() {
     // Serial.println(timeBuffer);
     lv_label_set_text(objects.status_bar__time, timeBuffer);
 
+    // set_var_wifi_status(WiFi.status());
     switch(WiFi.status())
     {
-      case WL_CONNECTED: lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x00FF00), LV_PART_MAIN); break;
-      case WL_DISCONNECTED : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x333333), LV_PART_MAIN); break;
-      case WL_IDLE_STATUS : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0xFFFF00), LV_PART_MAIN); break;
-      case WL_CONNECTION_LOST  : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0xFF0000), LV_PART_MAIN); break;
-      default : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x000000), LV_PART_MAIN); break;
+      case WL_CONNECTED: set_var_wifi_status(status_color_GREEN); break;
+      case WL_DISCONNECTED : set_var_wifi_status(status_color_GREY); break;
+      case WL_IDLE_STATUS : set_var_wifi_status(status_color_YELLOW); break;
+      case WL_CONNECTION_LOST  : set_var_wifi_status(status_color_RED); break;
+      default : set_var_wifi_status(status_color_WHITE); break;
     }
+
+    // lv_label_set_text(objects.ip_address, WiFi.localIP().toString().c_str());
+    set_var_ip_address( WiFi.localIP().toString().c_str());
+
+    if(can_in.alive.valve_status && can_in.alive.power_status && can_in.alive.fan_status) set_var_can_status(status_color_GREEN);
+    else if (!can_in.alive.valve_status && !can_in.alive.power_status && !can_in.alive.fan_status) set_var_can_status(status_color_RED);
+    else set_var_can_status(status_color_YELLOW);
+
+    char power_param_buffer[25];
+    if(can_in.alive.power_status)
+    {
+      sprintf(power_param_buffer, "%.1f V - %.2f A - %.1f W", can_in.POWER_STATUS.V_12V, can_in.POWER_STATUS.I_12V, can_in.POWER_STATUS.P_12V);
+    }
+    else
+    {
+      sprintf(power_param_buffer, "No power data");
+    }
+    lv_label_set_text(objects.status_bar__power_param, power_param_buffer);
   }
 
   lv_timer_handler_run_in_period(10);
@@ -138,18 +164,37 @@ void action_valve_value_changed(lv_event_t *e) {
 
 // Native global variables
 
-int32_t get_var_can_status() {
-  return 1;
+status_color get_var_can_status() {
+    return can_status;
 }
-void set_var_can_status(int32_t value) {}
-int32_t get_var_wifi_status() {
-  return 1;
+
+void set_var_can_status(status_color value) {
+    can_status = value;
 }
-void set_var_wifi_status(int32_t value) {}
-int32_t get_var_bt_status() {
-  return 1;
+
+status_color get_var_wifi_status() {
+    return wifi_status;
 }
-void set_var_bt_status(int32_t value) {}
+
+void set_var_wifi_status(status_color value) {
+    wifi_status = value;
+}
+status_color get_var_bt_status() {
+    return bt_status;
+}
+
+void set_var_bt_status(status_color value) {
+    bt_status = value;
+}
+
+const char *get_var_ip_address() {
+    return ip_address;
+}
+
+void set_var_ip_address(const char *value) {
+    strncpy(ip_address, value, sizeof(ip_address) / sizeof(char));
+    ip_address[sizeof(ip_address) / sizeof(char) - 1] = 0;
+}
 
 // === ОБРАБОТЧИК СВАЙПОВ ===
 // void action_to_mian(lv_event_t *e) {
