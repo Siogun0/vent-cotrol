@@ -261,6 +261,7 @@
               },
               "timeline": [],
               "eventHandlers": [],
+              "identifier": "StatusBar",
               "leftUnit": "px",
               "topUnit": "px",
               "widthUnit": "px",
@@ -428,7 +429,7 @@
                       "eventName": "VALUE_CHANGED",
                       "handlerType": "action",
                       "action": "Valve_value_changed",
-                      "userData": 0
+                      "userData": 1
                     }
                   ],
                   "identifier": "Valve1",
@@ -577,7 +578,7 @@
                       "eventName": "VALUE_CHANGED",
                       "handlerType": "action",
                       "action": "Valve_value_changed",
-                      "userData": 1
+                      "userData": 2
                     }
                   ],
                   "identifier": "Valve2",
@@ -726,7 +727,7 @@
                       "eventName": "VALUE_CHANGED",
                       "handlerType": "action",
                       "action": "Valve_value_changed",
-                      "userData": 2
+                      "userData": 3
                     }
                   ],
                   "identifier": "Valve3",
@@ -875,7 +876,7 @@
                       "eventName": "VALUE_CHANGED",
                       "handlerType": "action",
                       "action": "Valve_value_changed",
-                      "userData": 3
+                      "userData": 4
                     }
                   ],
                   "identifier": "Valve4",
@@ -1002,7 +1003,7 @@
                   "eventName": "VALUE_CHANGED",
                   "handlerType": "action",
                   "action": "Valve_value_changed",
-                  "userData": 4
+                  "userData": 5
                 }
               ],
               "identifier": "Valve5",
@@ -1050,7 +1051,7 @@
                   "eventName": "VALUE_CHANGED",
                   "handlerType": "action",
                   "action": "Valve_value_changed",
-                  "userData": 5
+                  "userData": 6
                 }
               ],
               "identifier": "Valve6",
@@ -1137,58 +1138,6 @@
       "deleteOnScreenUnload": false
     },
     {
-      "objID": "04975da7-cec4-4790-b2c3-bb860c2b68ea",
-      "components": [
-        {
-          "objID": "51f600a3-8ea1-4a19-e457-05c1a835bf75",
-          "type": "LVGLScreenWidget",
-          "left": 0,
-          "top": 0,
-          "width": 480,
-          "height": 480,
-          "customInputs": [],
-          "customOutputs": [],
-          "style": {
-            "objID": "118e5c05-d5d9-42e7-b165-09b1d22843fd",
-            "useStyle": "default",
-            "conditionalStyles": [],
-            "childStyles": []
-          },
-          "timeline": [],
-          "eventHandlers": [],
-          "leftUnit": "px",
-          "topUnit": "px",
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "children": [],
-          "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",
-          "hiddenFlagType": "literal",
-          "clickableFlag": true,
-          "clickableFlagType": "literal",
-          "checkedStateType": "literal",
-          "disabledStateType": "literal",
-          "states": "",
-          "useStyle": "",
-          "localStyles": {
-            "objID": "b229eecb-8065-4bd8-fc0c-b55335935c22"
-          },
-          "groupIndex": 0
-        }
-      ],
-      "connectionLines": [],
-      "localVariables": [],
-      "componentGroups": [],
-      "userProperties": [],
-      "name": "TopLayerScreen",
-      "left": 0,
-      "top": 0,
-      "width": 480,
-      "height": 480,
-      "isUsedAsUserWidget": false,
-      "createAtStart": true,
-      "deleteOnScreenUnload": false
-    },
-    {
       "objID": "b33a8f1d-2593-4450-a6f7-db49662ff59a",
       "components": [
         {
@@ -1261,50 +1210,6 @@
               "value": 0,
               "valueType": "literal",
               "previewValue": 0
-            },
-            {
-              "objID": "2c7c1519-0ba9-4af8-fe7b-51546144013b",
-              "type": "LVGLUserWidgetWidget",
-              "left": 0,
-              "top": 0,
-              "width": 480,
-              "height": 40,
-              "customInputs": [],
-              "customOutputs": [],
-              "style": {
-                "objID": "67660fd0-aa0d-4bf5-b750-d85da9c77f22",
-                "useStyle": "default",
-                "conditionalStyles": [],
-                "childStyles": []
-              },
-              "timeline": [],
-              "eventHandlers": [],
-              "leftUnit": "px",
-              "topUnit": "px",
-              "widthUnit": "px",
-              "heightUnit": "px",
-              "children": [],
-              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-              "hiddenFlagType": "literal",
-              "clickableFlag": true,
-              "clickableFlagType": "literal",
-              "flagScrollbarMode": "",
-              "flagScrollDirection": "",
-              "scrollSnapX": "",
-              "scrollSnapY": "",
-              "checkedStateType": "literal",
-              "disabledStateType": "literal",
-              "states": "",
-              "localStyles": {
-                "objID": "ba4f3acc-1baf-4b76-f5a6-3d4a5dfe57bb"
-              },
-              "group": "",
-              "groupIndex": 0,
-              "userWidgetPageName": "StatusBar",
-              "userPropertyValues": {
-                "objID": "87943f5e-23a0-427d-a91d-08906240bf61",
-                "values": {}
-              }
             },
             {
               "objID": "e1f8759b-1910-475d-c478-9a6410f4d6ae",

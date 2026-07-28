@@ -12,8 +12,8 @@
 
 objects_t objects;
 
-static const char *screen_names[] = { "Main", "TopLayerScreen", "Settings" };
-static const char *object_names[] = { "main", "top_layer_screen", "settings", "obj0", "obj0__time", "obj0__can", "obj0__wi_fi", "obj0__bluetooth", "obj0__temperature", "obj0__degree", "obj0__humidity", "obj1", "obj1__time", "obj1__can", "obj1__wi_fi", "obj1__bluetooth", "obj1__temperature", "obj1__degree", "obj1__humidity", "obj2", "valve1", "obj3", "valve2", "obj4", "valve3", "obj5", "valve4", "obj6", "valve5", "valve6", "obj7", "ssid_text", "obj8", "password_text", "obj9", "conect_wifi", "obj10", "keyboard", "ip_address" };
+static const char *screen_names[] = { "Main", "Settings" };
+static const char *object_names[] = { "main", "settings", "status_bar", "status_bar__time", "status_bar__can", "status_bar__wi_fi", "status_bar__bluetooth", "status_bar__temperature", "status_bar__degree", "status_bar__humidity", "obj0", "valve1", "obj1", "valve2", "obj2", "valve3", "obj3", "valve4", "obj4", "valve5", "valve6", "obj5", "ssid_text", "obj6", "password_text", "obj7", "conect_wifi", "obj8", "keyboard", "ip_address" };
 
 //
 // Event handlers
@@ -21,7 +21,7 @@ static const char *object_names[] = { "main", "top_layer_screen", "settings", "o
 
 lv_obj_t *tick_value_change_obj;
 
-static void event_handler_cb_main_obj2(lv_event_t *e) {
+static void event_handler_cb_main_obj0(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
@@ -105,7 +105,7 @@ static void event_handler_cb_settings_ssid_text(lv_event_t *e) {
     
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 4, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 3, 0, e);
     }
 }
 
@@ -116,11 +116,11 @@ static void event_handler_cb_settings_password_text(lv_event_t *e) {
     
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 6, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 5, 0, e);
     }
 }
 
-static void event_handler_cb_settings_obj9(lv_event_t *e) {
+static void event_handler_cb_settings_obj7(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
@@ -142,14 +142,14 @@ static void event_handler_cb_settings_conect_wifi(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_settings_obj10(lv_event_t *e) {
+static void event_handler_cb_settings_obj8(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
     if (event == LV_EVENT_CLICKED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 9, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 8, 0, e);
     }
 }
 
@@ -160,11 +160,11 @@ static void event_handler_cb_settings_keyboard(lv_event_t *e) {
     
     if (event == LV_EVENT_CANCEL) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 11, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 10, 0, e);
     }
     if (event == LV_EVENT_READY) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 11, 1, e);
+        flowPropagateValueLVGLEvent(flowState, 10, 1, e);
     }
 }
 
@@ -188,8 +188,9 @@ void create_screen_main() {
             lv_image_set_src(obj, &img_background);
         }
         {
+            // StatusBar
             lv_obj_t *obj = lv_obj_create(parent_obj);
-            objects.obj0 = obj;
+            objects.status_bar = obj;
             lv_obj_set_pos(obj, 0, 0);
             lv_obj_set_size(obj, 480, 40);
             lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -198,14 +199,14 @@ void create_screen_main() {
             lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            create_user_widget_status_bar(obj, getFlowState(flowState, 2), 4);
+            create_user_widget_status_bar(obj, getFlowState(flowState, 2), 3);
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj2 = obj;
+            objects.obj0 = obj;
             lv_obj_set_pos(obj, 380, 430);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_obj2, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_obj0, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -241,7 +242,7 @@ void create_screen_main() {
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj3 = obj;
+                    objects.obj1 = obj;
                     lv_obj_set_pos(obj, 27, 37);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -273,7 +274,7 @@ void create_screen_main() {
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj4 = obj;
+                    objects.obj2 = obj;
                     lv_obj_set_pos(obj, 27, 37);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -305,7 +306,7 @@ void create_screen_main() {
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj5 = obj;
+                    objects.obj3 = obj;
                     lv_obj_set_pos(obj, 27, 37);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -337,7 +338,7 @@ void create_screen_main() {
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj6 = obj;
+                    objects.obj4 = obj;
                     lv_obj_set_pos(obj, 27, 37);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -369,27 +370,11 @@ void create_screen_main() {
 void tick_screen_main() {
     void *flowState = getFlowState(0, 0);
     (void)flowState;
-    tick_user_widget_status_bar(getFlowState(flowState, 2), 4);
-}
-
-void create_screen_top_layer_screen() {
-    void *flowState = getFlowState(0, 1);
-    (void)flowState;
-    lv_obj_t *obj = lv_obj_create(0);
-    objects.top_layer_screen = obj;
-    lv_obj_set_pos(obj, 0, 0);
-    lv_obj_set_size(obj, 480, 480);
-    
-    tick_screen_top_layer_screen();
-}
-
-void tick_screen_top_layer_screen() {
-    void *flowState = getFlowState(0, 1);
-    (void)flowState;
+    tick_user_widget_status_bar(getFlowState(flowState, 2), 3);
 }
 
 void create_screen_settings() {
-    void *flowState = getFlowState(0, 2);
+    void *flowState = getFlowState(0, 1);
     (void)flowState;
     lv_obj_t *obj = lv_obj_create(0);
     objects.settings = obj;
@@ -404,21 +389,8 @@ void create_screen_settings() {
             lv_image_set_src(obj, &img_background);
         }
         {
-            lv_obj_t *obj = lv_obj_create(parent_obj);
-            objects.obj1 = obj;
-            lv_obj_set_pos(obj, 0, 0);
-            lv_obj_set_size(obj, 480, 40);
-            lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            create_user_widget_status_bar(obj, getFlowState(flowState, 2), 12);
-        }
-        {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.obj7 = obj;
+            objects.obj5 = obj;
             lv_obj_set_pos(obj, 32, 52);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -437,7 +409,7 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.obj8 = obj;
+            objects.obj6 = obj;
             lv_obj_set_pos(obj, 15, 94);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -456,10 +428,10 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj9 = obj;
+            objects.obj7 = obj;
             lv_obj_set_pos(obj, 323, 72);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj9, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj7, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -476,10 +448,10 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj10 = obj;
+            objects.obj8 = obj;
             lv_obj_set_pos(obj, -2, 430);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj10, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj8, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -517,9 +489,8 @@ void create_screen_settings() {
 }
 
 void tick_screen_settings() {
-    void *flowState = getFlowState(0, 2);
+    void *flowState = getFlowState(0, 1);
     (void)flowState;
-    tick_user_widget_status_bar(getFlowState(flowState, 2), 12);
 }
 
 void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex) {
@@ -602,11 +573,10 @@ void tick_user_widget_status_bar(void *flowState, int startWidgetIndex) {
 typedef void (*tick_screen_func_t)();
 tick_screen_func_t tick_screen_funcs[] = {
     tick_screen_main,
-    tick_screen_top_layer_screen,
     tick_screen_settings,
 };
 void tick_screen(int screen_index) {
-    if (screen_index >= 0 && screen_index < 3) {
+    if (screen_index >= 0 && screen_index < 2) {
         tick_screen_funcs[screen_index]();
     }
 }
@@ -703,6 +673,5 @@ void create_screens() {
     
     // Create screens
     create_screen_main();
-    create_screen_top_layer_screen();
     create_screen_settings();
 }

@@ -12,49 +12,39 @@ extern "C" {
 enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
     SCREEN_ID_MAIN = 1,
-    SCREEN_ID_TOP_LAYER_SCREEN = 2,
-    SCREEN_ID_SETTINGS = 3,
-    _SCREEN_ID_LAST = 3
+    SCREEN_ID_SETTINGS = 2,
+    _SCREEN_ID_LAST = 2
 };
 
 typedef struct _objects_t {
     lv_obj_t *main;
-    lv_obj_t *top_layer_screen;
     lv_obj_t *settings;
+    lv_obj_t *status_bar;
+    lv_obj_t *status_bar__time;
+    lv_obj_t *status_bar__can;
+    lv_obj_t *status_bar__wi_fi;
+    lv_obj_t *status_bar__bluetooth;
+    lv_obj_t *status_bar__temperature;
+    lv_obj_t *status_bar__degree;
+    lv_obj_t *status_bar__humidity;
     lv_obj_t *obj0;
-    lv_obj_t *obj0__time;
-    lv_obj_t *obj0__can;
-    lv_obj_t *obj0__wi_fi;
-    lv_obj_t *obj0__bluetooth;
-    lv_obj_t *obj0__temperature;
-    lv_obj_t *obj0__degree;
-    lv_obj_t *obj0__humidity;
-    lv_obj_t *obj1;
-    lv_obj_t *obj1__time;
-    lv_obj_t *obj1__can;
-    lv_obj_t *obj1__wi_fi;
-    lv_obj_t *obj1__bluetooth;
-    lv_obj_t *obj1__temperature;
-    lv_obj_t *obj1__degree;
-    lv_obj_t *obj1__humidity;
-    lv_obj_t *obj2;
     lv_obj_t *valve1;
-    lv_obj_t *obj3;
+    lv_obj_t *obj1;
     lv_obj_t *valve2;
-    lv_obj_t *obj4;
+    lv_obj_t *obj2;
     lv_obj_t *valve3;
-    lv_obj_t *obj5;
+    lv_obj_t *obj3;
     lv_obj_t *valve4;
-    lv_obj_t *obj6;
+    lv_obj_t *obj4;
     lv_obj_t *valve5;
     lv_obj_t *valve6;
-    lv_obj_t *obj7;
+    lv_obj_t *obj5;
     lv_obj_t *ssid_text;
-    lv_obj_t *obj8;
+    lv_obj_t *obj6;
     lv_obj_t *password_text;
-    lv_obj_t *obj9;
+    lv_obj_t *obj7;
     lv_obj_t *conect_wifi;
-    lv_obj_t *obj10;
+    lv_obj_t *obj8;
     lv_obj_t *keyboard;
     lv_obj_t *ip_address;
 } objects_t;
@@ -63,9 +53,6 @@ extern objects_t objects;
 
 void create_screen_main();
 void tick_screen_main();
-
-void create_screen_top_layer_screen();
-void tick_screen_top_layer_screen();
 
 void create_screen_settings();
 void tick_screen_settings();

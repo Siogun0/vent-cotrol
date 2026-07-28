@@ -25,35 +25,7 @@ volatile t_can_node_panel_bus0_output can_out;
 const char* ntpServer = "pool.ntp.org";
 const char* timeZone = "MSK-3";
 
-// // Обработчик нажатия на кнопку
-// void action_increase_cntr(lv_event_t * e) {
-//   // if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
-//       Serial.println("Кнопка успешно нажата пальцем!");
-//       cntr++;
-//       sprintf(str, "Clicked %d", cntr);
-//       if(objects.btn_label) lv_label_set_text(objects.btn_label, str);
-
-//   // }
-// }
-
-// void action_to_settings(lv_event_t *e) {
-//   loadScreen(SCREEN_ID_SETTINGS);
-// }
-
-// void action_change_brightness(lv_event_t * e)
-// {
-//   // Получаем указатель на сам слайдер, который вызвал событие
-//   lv_obj_t * slider = (lv_obj_t*)lv_event_get_target(e);
-  
-//   // Считываем его текущее числовое значение (int)
-//   int slider_value = lv_slider_get_value(slider);
-
-//   ledcWrite(GFX_BL, slider_value);
-//   can_out.CTRL_VALVE.VALVE_1_REQ = slider_value;
-//   can_out.CTRL_VALVE.VALVE_2_REQ = slider_value;
-//   can_out.CTRL_VALVE.VALVE_3_REQ = slider_value;
-//   can_out.CTRL_VALVE.VALVE_4_REQ = slider_value;
-// }
+int status_bar_update_req = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -78,6 +50,8 @@ void setup() {
 
   // Запуск графического интерфейса EEZ
   ui_init();
+  // Принудительно забираем StatusBar у экрана и отдаем его верхнему слою LVGL
+  lv_obj_set_parent(objects.status_bar, lv_layer_top()); 
   screen_timer_init();
 
   WiFi.begin();
@@ -87,7 +61,30 @@ void setup() {
 }
 
 void loop() {
-  lv_timer_handler_run_in_period(5);
+  if(status_bar_update_req)
+  {
+    status_bar_update_req = 0;
+    time_t now;
+    struct tm timeinfo;
+    char timeBuffer[6]; // Строка для "ЧЧ:ММ\0"
+    time(&now);
+    localtime_r(&now, &timeinfo);
+
+    strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", &timeinfo);
+    // Serial.println(timeBuffer);
+    lv_label_set_text(objects.status_bar__time, timeBuffer);
+
+    switch(WiFi.status())
+    {
+      case WL_CONNECTED: lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x00FF00), LV_PART_MAIN); break;
+      case WL_DISCONNECTED : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x333333), LV_PART_MAIN); break;
+      case WL_IDLE_STATUS : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0xFFFF00), LV_PART_MAIN); break;
+      case WL_CONNECTION_LOST  : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0xFF0000), LV_PART_MAIN); break;
+      default : lv_obj_set_style_text_color(objects.status_bar__wi_fi, lv_color_hex(0x000000), LV_PART_MAIN); break;
+    }
+  }
+
+  lv_timer_handler_run_in_period(10);
   ui_tick();
 
   if(platform_can_poll(0))
@@ -203,18 +200,11 @@ void screen_timer_init(void)
   };
   esp_timer_handle_t screen_timer;
   esp_timer_create(&screen_timer_args, &screen_timer);
-  esp_timer_start_periodic(screen_timer, 1000000);
+  esp_timer_start_periodic(screen_timer, 100000);
 }
 
 void screen_timer_update(void *arg)
 {
-  struct tm timeinfo;
-  getLocalTime(&timeinfo);
-  char timeBuffer[6]; // Строка для "ЧЧ:ММ:СС\0"
-      
-  // Форматируем время встроенным методом C++
-  strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", &timeinfo);
-  // Serial.println(timeBuffer);
-  lv_label_set_text(objects.obj0__time, timeBuffer);
+  status_bar_update_req = 1;
 }
 
