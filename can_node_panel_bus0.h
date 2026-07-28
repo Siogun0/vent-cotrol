@@ -60,6 +60,8 @@
 #define CAN_SIGNAL_VALVE_2_REQ_MAX  100
 #define CAN_SIGNAL_VALVE_3_REQ_MAX  100
 #define CAN_SIGNAL_VALVE_4_REQ_MAX  100
+#define CAN_SIGNAL_VALVE_5_REQ_MAX  100
+#define CAN_SIGNAL_VALVE_6_REQ_MAX  100
 #define CAN_SIGNAL_CPU_TEMP_MAX  215
 #define CAN_SIGNAL_CPU_TEMP_MIN  -40
 #define CAN_SIGNAL_V_3V3_MAX  5
@@ -122,6 +124,8 @@ typedef struct
         uint8_t VALVE_2_REQ;
         uint8_t VALVE_3_REQ;
         uint8_t VALVE_4_REQ;
+        uint8_t VALVE_5_REQ;
+        uint8_t VALVE_6_REQ;
     } CTRL_VALVE;
     t_can_node_panel_bus0_output_tx_now tx_now;
 } t_can_node_panel_bus0_output;

@@ -180,6 +180,8 @@ void can_node_panel_bus0_tx(volatile t_can_node_panel_bus0_output *out)
         msg |= SetBits(8, 8, (out->CTRL_VALVE.VALVE_2_REQ));
         msg |= SetBits(16, 8, (out->CTRL_VALVE.VALVE_3_REQ));
         msg |= SetBits(24, 8, (out->CTRL_VALVE.VALVE_4_REQ));
+        msg |= SetBits(32, 8, (out->CTRL_VALVE.VALVE_5_REQ));
+        msg |= SetBits(40, 8, (out->CTRL_VALVE.VALVE_6_REQ));
         
         platform_can_xmit_mb(0, MBN_TX_CTRL_VALVE + __mb_shift__, msg);
     }
