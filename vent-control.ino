@@ -1,6 +1,9 @@
 #include <lvgl.h>
 #include <Arduino_GFX_Library.h>
+#include <WiFi.h>
 #include <Wire.h>
+#include <Preferences.h>
+#include <time.h>
 #include <TAMC_GT911.h>
 extern "C" {
 #include "can_platform.h"
@@ -14,12 +17,13 @@ extern "C" {
 
 #include "esp_timer.h"
 
+// #include "ds18b20.h"
+
 volatile t_can_node_panel_bus0_input can_in;
 volatile t_can_node_panel_bus0_output can_out;
-unsigned long time_stamp;
 
-uint32_t cntr = 0;
-char str[128];
+const char* ntpServer = "pool.ntp.org";
+const char* timeZone = "MSK-3";
 
 // // Обработчик нажатия на кнопку
 // void action_increase_cntr(lv_event_t * e) {
@@ -76,6 +80,9 @@ void setup() {
   ui_init();
   screen_timer_init();
 
+  WiFi.begin();
+  configTzTime(timeZone, ntpServer);
+
   Serial.println("🎉 Система успешно запущена!");
 }
 
@@ -93,7 +100,42 @@ void loop() {
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
 void action_connect_wifi(lv_event_t *e) {
-    // TODO: Implement action connect_wifi here
+  WiFi.disconnect(true);
+  while (WiFi.status() == WL_CONNECTED) {
+    delay(100);
+  }
+  WiFi.begin(lv_textarea_get_text(objects.ssid_text), lv_textarea_get_text(objects.password_text));
+  // Serial.println(lv_textarea_get_text(objects.ssid_text));
+  // Serial.println(lv_textarea_get_text(objects.password_text));
+}
+
+void action_valve_value_changed(lv_event_t *e) {
+  // Получаем наше число из user_data
+    int32_t valve_id = (int32_t)(intptr_t)lv_event_get_user_data(e);
+    lv_obj_t* object = (lv_obj_t*)lv_event_get_target(e);
+    
+    switch(valve_id)
+    {
+      case 1:
+        can_out.CTRL_VALVE.VALVE_1_REQ = lv_slider_get_value(object);
+        break;
+      case 2:
+        can_out.CTRL_VALVE.VALVE_2_REQ = lv_slider_get_value(object);
+        break;
+      case 3:
+        can_out.CTRL_VALVE.VALVE_3_REQ = lv_slider_get_value(object);
+        break;
+      case 4:
+        can_out.CTRL_VALVE.VALVE_4_REQ = lv_slider_get_value(object);
+        break;
+      case 5:
+        can_out.CTRL_VALVE.VALVE_5_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
+        break;
+      case 6:
+        can_out.CTRL_VALVE.VALVE_6_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
+        break;
+    }
+    Serial.printf("Изменено значение клапана %d \n", valve_id);
 }
 
 
@@ -161,10 +203,18 @@ void screen_timer_init(void)
   };
   esp_timer_handle_t screen_timer;
   esp_timer_create(&screen_timer_args, &screen_timer);
-  esp_timer_start_periodic(screen_timer, 100000);
+  esp_timer_start_periodic(screen_timer, 1000000);
 }
 
 void screen_timer_update(void *arg)
 {
-
+  struct tm timeinfo;
+  getLocalTime(&timeinfo);
+  char timeBuffer[6]; // Строка для "ЧЧ:ММ:СС\0"
+      
+  // Форматируем время встроенным методом C++
+  strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", &timeinfo);
+  // Serial.println(timeBuffer);
+  lv_label_set_text(objects.obj0__time, timeBuffer);
 }
+

@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 extern void action_connect_wifi(lv_event_t * e);
+extern void action_valve_value_changed(lv_event_t * e);
 
 #ifdef __cplusplus
 }

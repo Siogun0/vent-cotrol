@@ -38,13 +38,25 @@ typedef struct _objects_t {
     lv_obj_t *obj1__degree;
     lv_obj_t *obj1__humidity;
     lv_obj_t *obj2;
+    lv_obj_t *valve1;
     lv_obj_t *obj3;
-    lv_obj_t *ssid_text;
+    lv_obj_t *valve2;
     lv_obj_t *obj4;
-    lv_obj_t *password_text;
-    lv_obj_t *conect_wifi;
+    lv_obj_t *valve3;
     lv_obj_t *obj5;
+    lv_obj_t *valve4;
+    lv_obj_t *obj6;
+    lv_obj_t *valve5;
+    lv_obj_t *valve6;
+    lv_obj_t *obj7;
+    lv_obj_t *ssid_text;
+    lv_obj_t *obj8;
+    lv_obj_t *password_text;
+    lv_obj_t *obj9;
+    lv_obj_t *conect_wifi;
+    lv_obj_t *obj10;
     lv_obj_t *keyboard;
+    lv_obj_t *ip_address;
 } objects_t;
 
 extern objects_t objects;
