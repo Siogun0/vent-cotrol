@@ -23,7 +23,7 @@ typedef enum {
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_NONE
+    FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0
 };
 
 // Native global variables
@@ -36,6 +36,12 @@ extern status_color get_var_bt_status();
 extern void set_var_bt_status(status_color value);
 extern const char *get_var_ip_address();
 extern void set_var_ip_address(const char *value);
+extern const char *get_var_temperature_str();
+extern void set_var_temperature_str(const char *value);
+extern const char *get_var_power_str();
+extern void set_var_power_str(const char *value);
+extern const char *get_var_time_str();
+extern void set_var_time_str(const char *value);
 
 #ifdef __cplusplus
 }

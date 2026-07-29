@@ -7,7 +7,6 @@
 extern "C" {
 #endif
 
-extern const lv_font_t ui_font_ubuntu_medium_20;
 extern const lv_font_t ui_font_roboto_condensed_semi_bold_20;
 
 #ifndef EXT_FONT_DESC_T

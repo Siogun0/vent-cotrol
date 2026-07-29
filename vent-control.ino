@@ -27,6 +27,9 @@ const char* timeZone = "MSK-3";
 
 // === Native global variable ===
 char ip_address[] = "---.---.---.---";
+char temperature_str[20] = { 0 };
+char power_str[20] = { 0 };
+char time_str[10] = { 0 };
 status_color can_status = status_color_GREY;
 status_color wifi_status = status_color_GREY;
 status_color bt_status = status_color_GREY;
@@ -67,47 +70,10 @@ void setup() {
   Serial.println("🎉 Система успешно запущена!");
 }
 
+// === Основное Loop цикл ===
+
 void loop() {
-  if(status_bar_update_req)
-  {
-    status_bar_update_req = 0;
-    time_t now;
-    struct tm timeinfo;
-    char timeBuffer[6]; // Строка для "ЧЧ:ММ\0"
-    time(&now);
-    localtime_r(&now, &timeinfo);
-
-    strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", &timeinfo);
-    lv_label_set_text(objects.status_bar__time, timeBuffer);
-
-    // set_var_wifi_status(WiFi.status());
-    switch(WiFi.status())
-    {
-      case WL_CONNECTED: set_var_wifi_status(status_color_GREEN); break;
-      case WL_DISCONNECTED : set_var_wifi_status(status_color_GREY); break;
-      case WL_IDLE_STATUS : set_var_wifi_status(status_color_YELLOW); break;
-      case WL_CONNECTION_LOST  : set_var_wifi_status(status_color_RED); break;
-      default : set_var_wifi_status(status_color_WHITE); break;
-    }
-
-    // lv_label_set_text(objects.ip_address, WiFi.localIP().toString().c_str());
-    set_var_ip_address( WiFi.localIP().toString().c_str());
-
-    if(can_in.alive.valve_status && can_in.alive.power_status && can_in.alive.fan_status) set_var_can_status(status_color_GREEN);
-    else if (!can_in.alive.valve_status && !can_in.alive.power_status && !can_in.alive.fan_status) set_var_can_status(status_color_RED);
-    else set_var_can_status(status_color_YELLOW);
-
-    char power_param_buffer[25];
-    if(can_in.alive.power_status)
-    {
-      sprintf(power_param_buffer, "%.1f V - %.2f A - %.1f W", can_in.POWER_STATUS.V_12V, can_in.POWER_STATUS.I_12V, can_in.POWER_STATUS.P_12V);
-    }
-    else
-    {
-      sprintf(power_param_buffer, "No power data");
-    }
-    lv_label_set_text(objects.status_bar__power_param, power_param_buffer);
-  }
+  status_update_poll();
 
   lv_timer_handler_run_in_period(10);
   ui_tick();
@@ -161,8 +127,61 @@ void action_valve_value_changed(lv_event_t *e) {
 }
 
 
-// Native global variables
+// === Обновление глобальных переменных статуса ===
+void status_update_poll(void)
+{
+  if(status_bar_update_req)
+  {
+    status_bar_update_req = 0;
+    // Время
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    if(timeinfo.tm_year > (2020 - 1900))
+    {
+      strftime(time_str, sizeof(time_str), "%H:%M", &timeinfo);
+    }
+    else
+    {
+      strcpy(time_str, "--:--");
+    }
 
+    // WIFI
+    switch(WiFi.status())
+    {
+      case WL_CONNECTED: set_var_wifi_status(status_color_GREEN); break;
+      case WL_DISCONNECTED : set_var_wifi_status(status_color_GREY); break;
+      case WL_IDLE_STATUS : set_var_wifi_status(status_color_YELLOW); break;
+      case WL_CONNECTION_LOST  : set_var_wifi_status(status_color_RED); break;
+      default : set_var_wifi_status(status_color_WHITE); break;
+    }
+
+    // Bluetooth
+
+    // IP address
+    set_var_ip_address(WiFi.localIP().toString().c_str());
+
+    // CAN
+    if(can_in.alive.valve_status && can_in.alive.power_status && can_in.alive.fan_status) set_var_can_status(status_color_GREEN);
+    else if (!can_in.alive.valve_status && !can_in.alive.power_status && !can_in.alive.fan_status) set_var_can_status(status_color_RED);
+    else set_var_can_status(status_color_YELLOW);
+
+    if(can_in.alive.power_status)
+    {
+      sprintf(power_str, "%.1fV %.2fA %.1fW", can_in.POWER_STATUS.V_12V, can_in.POWER_STATUS.I_12V, can_in.POWER_STATUS.P_12V);
+    }
+    else
+    {
+      sprintf(power_str, "No power data");
+    }
+
+    // Temperature
+    sprintf(temperature_str, "%.1f°C %.0f%%", (float)can_in.VALVE_STATUS.CPU_TEMP, 66.6f);
+  }
+}
+
+// Native global variables
 status_color get_var_can_status() {
     return can_status;
 }
@@ -193,6 +212,33 @@ const char *get_var_ip_address() {
 void set_var_ip_address(const char *value) {
     strncpy(ip_address, value, sizeof(ip_address) / sizeof(char));
     ip_address[sizeof(ip_address) / sizeof(char) - 1] = 0;
+}
+
+const char *get_var_time_str() {
+    return time_str;
+}
+
+void set_var_time_str(const char *value) {
+    strncpy(time_str, value, sizeof(time_str) / sizeof(char));
+    time_str[sizeof(time_str) / sizeof(char) - 1] = 0;
+}
+
+const char *get_var_power_str() {
+    return power_str;
+}
+
+void set_var_power_str(const char *value) {
+    strncpy(power_str, value, sizeof(power_str) / sizeof(char));
+    power_str[sizeof(power_str) / sizeof(char) - 1] = 0;
+}
+
+const char *get_var_temperature_str() {
+    return temperature_str;
+}
+
+void set_var_temperature_str(const char *value) {
+    strncpy(temperature_str, value, sizeof(temperature_str) / sizeof(char));
+    temperature_str[sizeof(temperature_str) / sizeof(char) - 1] = 0;
 }
 
 // === ОБРАБОТЧИК СВАЙПОВ ===
