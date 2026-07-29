@@ -78,7 +78,6 @@ void loop() {
     localtime_r(&now, &timeinfo);
 
     strftime(timeBuffer, sizeof(timeBuffer), "%H:%M", &timeinfo);
-    // Serial.println(timeBuffer);
     lv_label_set_text(objects.status_bar__time, timeBuffer);
 
     // set_var_wifi_status(WiFi.status());

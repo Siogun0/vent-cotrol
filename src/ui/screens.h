@@ -20,12 +20,12 @@ typedef struct _objects_t {
     lv_obj_t *main;
     lv_obj_t *settings;
     lv_obj_t *status_bar;
+    lv_obj_t *status_bar__obj0;
     lv_obj_t *status_bar__time;
     lv_obj_t *status_bar__can;
     lv_obj_t *status_bar__wi_fi;
     lv_obj_t *status_bar__bluetooth;
     lv_obj_t *status_bar__temperature;
-    lv_obj_t *status_bar__humidity;
     lv_obj_t *status_bar__power_param;
     lv_obj_t *background_image;
     lv_obj_t *obj0;
