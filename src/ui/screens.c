@@ -13,7 +13,7 @@
 objects_t objects;
 
 static const char *screen_names[] = { "Manual", "Settings", "Main" };
-static const char *object_names[] = { "manual", "settings", "main", "status_bar", "status_bar__obj0", "status_bar__time", "status_bar__can", "status_bar__wi_fi", "status_bar__bluetooth", "status_bar__temperature", "status_bar__power_param", "background_image", "obj0", "input_flow", "valve1", "obj1", "valve2", "obj2", "valve3", "obj3", "valve4", "obj4", "output_flow", "obj5", "obj6", "valve5", "valve6", "fans", "fans_common_speed", "obj7", "obj8", "obj9", "obj10", "ssid_text", "obj11", "password_text", "obj12", "conect_wifi", "obj13", "ip_address", "power_data_hiden", "keyboard", "obj14", "obj15" };
+static const char *object_names[] = { "manual", "settings", "main", "status_bar", "status_bar__obj0", "status_bar__time", "status_bar__can", "status_bar__wi_fi", "status_bar__bluetooth", "status_bar__temperature", "status_bar__power_param", "background_image", "input_flow", "valve1", "obj0", "valve2", "obj1", "valve3", "obj2", "valve4", "obj3", "output_flow", "obj4", "obj5", "valve5", "valve6", "fans", "fans_common_speed", "obj6", "debug", "obj7", "ssid_text", "obj8", "password_text", "obj9", "conect_wifi", "obj10", "ip_address", "power_data_hiden", "keyboard", "obj11", "obj12" };
 
 //
 // Event handlers
@@ -21,14 +21,14 @@ static const char *object_names[] = { "manual", "settings", "main", "status_bar"
 
 lv_obj_t *tick_value_change_obj;
 
-static void event_handler_cb_manual_obj0(lv_event_t *e) {
+static void event_handler_cb_manual_manual(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
-    if (event == LV_EVENT_CLICKED) {
+    if (event == LV_EVENT_GESTURE) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 3, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 1, 0, e);
     }
 }
 
@@ -41,12 +41,12 @@ static void event_handler_cb_manual_valve1(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 7, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 5, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)1;
-        flowPropagateValueLVGLEvent(flowState, 7, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 5, 0, e);
     }
 }
 
@@ -59,12 +59,12 @@ static void event_handler_cb_manual_valve2(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 9, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 7, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)2;
-        flowPropagateValueLVGLEvent(flowState, 9, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 7, 0, e);
     }
 }
 
@@ -77,12 +77,12 @@ static void event_handler_cb_manual_valve3(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 11, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 9, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)3;
-        flowPropagateValueLVGLEvent(flowState, 11, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 9, 0, e);
     }
 }
 
@@ -95,12 +95,12 @@ static void event_handler_cb_manual_valve4(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 13, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 11, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)4;
-        flowPropagateValueLVGLEvent(flowState, 13, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 11, 0, e);
     }
 }
 
@@ -113,12 +113,12 @@ static void event_handler_cb_manual_valve5(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 19, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 17, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 19, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 17, 0, e);
     }
 }
 
@@ -131,12 +131,12 @@ static void event_handler_cb_manual_valve6(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 20, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 18, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 20, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 18, 0, e);
     }
 }
 
@@ -149,23 +149,23 @@ static void event_handler_cb_manual_fans_common_speed(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 23, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 21, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 23, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 21, 0, e);
     }
 }
 
-static void event_handler_cb_manual_obj9(lv_event_t *e) {
+static void event_handler_cb_settings_settings(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
-    if (event == LV_EVENT_CLICKED) {
+    if (event == LV_EVENT_GESTURE) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 26, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 1, 0, e);
     }
 }
 
@@ -191,7 +191,7 @@ static void event_handler_cb_settings_password_text(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_settings_obj12(lv_event_t *e) {
+static void event_handler_cb_settings_obj9(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
@@ -213,7 +213,7 @@ static void event_handler_cb_settings_conect_wifi(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_settings_obj13(lv_event_t *e) {
+static void event_handler_cb_settings_obj10(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
@@ -250,7 +250,7 @@ static void event_handler_cb_settings_keyboard(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_main_obj14(lv_event_t *e) {
+static void event_handler_cb_main_obj11(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
@@ -272,6 +272,7 @@ void create_screen_manual() {
     objects.manual = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 480, 480);
+    lv_obj_add_event_cb(obj, event_handler_cb_manual_manual, LV_EVENT_ALL, flowState);
     lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE|LV_OBJ_FLAG_SCROLL_ELASTIC|LV_OBJ_FLAG_SCROLL_MOMENTUM|LV_OBJ_FLAG_SCROLL_CHAIN_HOR|LV_OBJ_FLAG_SCROLL_CHAIN_VER);
     lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
@@ -298,23 +299,6 @@ void create_screen_manual() {
             lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             create_user_widget_status_bar(obj, getFlowState(flowState, 2), 4);
-        }
-        {
-            lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj0 = obj;
-            lv_obj_set_pos(obj, 380, 430);
-            lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_manual_obj0, LV_EVENT_ALL, flowState);
-            {
-                lv_obj_t *parent_obj = obj;
-                {
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    lv_obj_set_pos(obj, 0, 0);
-                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text_static(obj, "Next");
-                }
-            }
         }
         {
             // InputFlow
@@ -353,10 +337,11 @@ void create_screen_manual() {
                     lv_obj_set_pos(obj, 119, 47);
                     lv_obj_set_size(obj, 325, 10);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve1, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj1 = obj;
+                    objects.obj0 = obj;
                     lv_obj_set_pos(obj, 15, 40);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -371,10 +356,11 @@ void create_screen_manual() {
                     lv_obj_set_pos(obj, 119, 88);
                     lv_obj_set_size(obj, 325, 10);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve2, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj2 = obj;
+                    objects.obj1 = obj;
                     lv_obj_set_pos(obj, 15, 81);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -389,10 +375,11 @@ void create_screen_manual() {
                     lv_obj_set_pos(obj, 119, 130);
                     lv_obj_set_size(obj, 325, 10);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve3, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj3 = obj;
+                    objects.obj2 = obj;
                     lv_obj_set_pos(obj, 15, 123);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -407,10 +394,11 @@ void create_screen_manual() {
                     lv_obj_set_pos(obj, 118, 170);
                     lv_obj_set_size(obj, 325, 10);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve4, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj4 = obj;
+                    objects.obj3 = obj;
                     lv_obj_set_pos(obj, 15, 163);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -443,7 +431,7 @@ void create_screen_manual() {
                 lv_obj_t *parent_obj = obj;
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj5 = obj;
+                    objects.obj4 = obj;
                     lv_obj_set_pos(obj, 15, 42);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -461,7 +449,7 @@ void create_screen_manual() {
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj6 = obj;
+                    objects.obj5 = obj;
                     lv_obj_set_pos(obj, 251, 42);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -477,6 +465,7 @@ void create_screen_manual() {
                     lv_obj_set_size(obj, 85, 10);
                     lv_slider_set_range(obj, 0, 1);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve5, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     // Valve6
@@ -486,6 +475,7 @@ void create_screen_manual() {
                     lv_obj_set_size(obj, 85, 10);
                     lv_slider_set_range(obj, 0, 1);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_valve6, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
             }
         }
@@ -526,10 +516,11 @@ void create_screen_manual() {
                     lv_obj_set_size(obj, 325, 10);
                     lv_slider_set_range(obj, 0, 4);
                     lv_obj_add_event_cb(obj, event_handler_cb_manual_fans_common_speed, LV_EVENT_ALL, flowState);
+                    lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.obj7 = obj;
+                    objects.obj6 = obj;
                     lv_obj_set_pos(obj, 15, 40);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     add_style_label_white(obj);
@@ -540,32 +531,13 @@ void create_screen_manual() {
             }
         }
         {
-            lv_obj_t *obj = lv_dropdown_create(parent_obj);
-            objects.obj8 = obj;
-            lv_obj_set_pos(obj, 61, 432);
-            lv_obj_set_size(obj, 308, LV_SIZE_CONTENT);
-            lv_dropdown_set_options_static(obj, "Ручная настройка\nНикого нет\nТолько спальня\nДве спальни\nТолько гостинная\nГостинная и спальни\nМаксимально");
-            lv_dropdown_set_selected(obj, 0);
-            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_style_text_color(obj, lv_color_hex(0x858080), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
-        {
-            lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj9 = obj;
-            lv_obj_set_pos(obj, 0, 434);
-            lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_manual_obj9, LV_EVENT_ALL, flowState);
-            {
-                lv_obj_t *parent_obj = obj;
-                {
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    lv_obj_set_pos(obj, 0, 0);
-                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text_static(obj, "Back");
-                }
-            }
+            // debug
+            lv_obj_t *obj = lv_label_create(parent_obj);
+            objects.debug = obj;
+            lv_obj_set_pos(obj, 198, 438);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+            add_style_label_yellow(obj);
+            lv_label_set_text_static(obj, "Text");
         }
     }
     
@@ -577,7 +549,7 @@ void tick_screen_manual() {
     (void)flowState;
     tick_user_widget_status_bar(getFlowState(flowState, 2), 4);
     {
-        int32_t new_val = evalIntegerProperty(flowState, 7, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 5, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve1);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve1;
@@ -586,7 +558,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 9, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 7, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve2);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve2;
@@ -595,7 +567,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 11, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 9, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve3);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve3;
@@ -604,7 +576,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 13, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 11, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve4);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve4;
@@ -613,7 +585,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 19, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 17, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve5);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve5;
@@ -622,7 +594,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 20, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 18, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.valve6);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.valve6;
@@ -631,7 +603,7 @@ void tick_screen_manual() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 23, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 21, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.fans_common_speed);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.fans_common_speed;
@@ -648,6 +620,7 @@ void create_screen_settings() {
     objects.settings = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 480, 480);
+    lv_obj_add_event_cb(obj, event_handler_cb_settings_settings, LV_EVENT_ALL, flowState);
     lv_obj_set_style_text_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(obj, lv_color_hex(0x5555ff), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -655,7 +628,7 @@ void create_screen_settings() {
         lv_obj_t *parent_obj = obj;
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.obj10 = obj;
+            objects.obj7 = obj;
             lv_obj_set_pos(obj, 32, 52);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -674,7 +647,7 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            objects.obj11 = obj;
+            objects.obj8 = obj;
             lv_obj_set_pos(obj, 15, 94);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -693,10 +666,10 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj12 = obj;
+            objects.obj9 = obj;
             lv_obj_set_pos(obj, 323, 72);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj12, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj9, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -713,10 +686,10 @@ void create_screen_settings() {
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj13 = obj;
+            objects.obj10 = obj;
             lv_obj_set_pos(obj, -2, 430);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj13, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_obj10, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -781,10 +754,10 @@ void create_screen_main() {
         lv_obj_t *parent_obj = obj;
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
-            objects.obj14 = obj;
+            objects.obj11 = obj;
             lv_obj_set_pos(obj, 380, 430);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_obj14, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_obj11, LV_EVENT_ALL, flowState);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -798,12 +771,11 @@ void create_screen_main() {
         }
         {
             lv_obj_t *obj = lv_dropdown_create(parent_obj);
-            objects.obj15 = obj;
+            objects.obj12 = obj;
             lv_obj_set_pos(obj, 86, 61);
             lv_obj_set_size(obj, 308, LV_SIZE_CONTENT);
             lv_dropdown_set_options_static(obj, "Ручная настройка\nНикого нет\nТолько спальня\nДве спальни\nТолько гостинная\nГостинная и спальни\nМаксимально");
             lv_dropdown_set_selected(obj, 0);
-            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_style_text_color(obj, lv_color_hex(0x858080), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
