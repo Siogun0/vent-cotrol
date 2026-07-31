@@ -36,6 +36,8 @@ status_color bt_status = status_color_GREY;
 
 int status_bar_update_req = 0;
 
+Preferences prefs;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
@@ -43,6 +45,8 @@ void setup() {
   platform_can_init();
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
   can_timer_init();
+  loadLastState();
+  
   // Инициализация экрана
   screen_init();
   // Инициализация LVGL
@@ -84,6 +88,8 @@ void loop() {
   }
   can_node_panel_bus0_rx(&can_in);
   can_node_panel_bus0_tx(&can_out);
+
+  saveCurrentStatePoll();
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
@@ -122,6 +128,10 @@ void action_valve_value_changed(lv_event_t *e) {
       case 6:
         can_out.CTRL_VALVE.VALVE_6_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
         break;
+      //TODO FAN control
+      case 0:
+        can_out.CTRL_FAN.FAN_1_REQ = lv_slider_get_value(object);
+        can_out.CTRL_FAN.FAN_2_REQ = lv_slider_get_value(object);
     }
     Serial.printf("Изменено значение клапана %d \n", valve_id);
 }
@@ -241,31 +251,135 @@ void set_var_temperature_str(const char *value) {
     temperature_str[sizeof(temperature_str) / sizeof(char) - 1] = 0;
 }
 
-// === ОБРАБОТЧИК СВАЙПОВ ===
-// void action_to_mian(lv_event_t *e) {
-//   // Получаем направление свайпа
-//   lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
-//   loadScreen(SCREEN_ID_MAIN);
-//   switch(dir) {
-//     case LV_DIR_LEFT:
-//       loadScreen(SCREEN_ID_MAIN);
-//       break;
-      
-//     case LV_DIR_RIGHT:
-//       loadScreen(SCREEN_ID_MAIN);
-//       break;
-      
-//     case LV_DIR_BOTTOM:
-//       Serial.println("Свайп сверху вниз");
-//       break;
-      
-//     case LV_DIR_TOP:
-//       Serial.println("Свайп снизу вверх");
-//       break;
-//   }
-// }
+// int32_t exhaust_fan_speed;
 
-// Функции таймеров
+int32_t get_var_exhaust_fan_speed() {
+    return can_out.CTRL_FAN.FAN_1_REQ;
+}
+
+void set_var_exhaust_fan_speed(int32_t value) {
+    can_out.CTRL_FAN.FAN_1_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t supply_fan_speed;
+
+int32_t get_var_supply_fan_speed() {
+    return can_out.CTRL_FAN.FAN_2_REQ;
+}
+
+void set_var_supply_fan_speed(int32_t value) {
+    can_out.CTRL_FAN.FAN_2_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t family_room_valve;
+
+int32_t get_var_family_room_valve() {
+    return can_out.CTRL_VALVE.VALVE_1_REQ;
+}
+
+void set_var_family_room_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_1_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t master_badroom_valve;
+
+int32_t get_var_master_badroom_valve() {
+    return can_out.CTRL_VALVE.VALVE_2_REQ;
+}
+
+void set_var_master_badroom_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_2_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t children_room_valve;
+
+int32_t get_var_children_room_valve() {
+    return can_out.CTRL_VALVE.VALVE_3_REQ;
+}
+
+void set_var_children_room_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_3_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t pantry_room_valve;
+
+int32_t get_var_pantry_room_valve() {
+    return can_out.CTRL_VALVE.VALVE_4_REQ;
+}
+
+void set_var_pantry_room_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_4_REQ = value;
+    notifyChageValue();
+}
+
+// int32_t toilet_exhaust_valve;
+
+int32_t get_var_toilet_exhaust_valve() {
+    return can_out.CTRL_VALVE.VALVE_5_REQ < 50 ? 0 : 1;
+}
+
+void set_var_toilet_exhaust_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_5_REQ = value ? 100 : 0;
+    notifyChageValue();
+}
+
+// int32_t bathroom_exhaust_valve;
+
+int32_t get_var_bathroom_exhaust_valve() {
+    return can_out.CTRL_VALVE.VALVE_6_REQ < 50 ? 0 : 1;
+}
+
+void set_var_bathroom_exhaust_valve(int32_t value) {
+    can_out.CTRL_VALVE.VALVE_6_REQ = value ? 100 : 0;
+    notifyChageValue();
+}
+
+// === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===
+uint32_t lastChangingValue = 0;
+
+void loadLastState(void)
+{
+  prefs.begin("actual_state");
+  can_out.CTRL_VALVE.VALVE_1_REQ = prefs.getUChar("valve_1", 50);
+  can_out.CTRL_VALVE.VALVE_2_REQ = prefs.getUChar("valve_2", 50);
+  can_out.CTRL_VALVE.VALVE_3_REQ = prefs.getUChar("valve_3", 50);
+  can_out.CTRL_VALVE.VALVE_4_REQ = prefs.getUChar("valve_4", 50);
+  can_out.CTRL_VALVE.VALVE_5_REQ = prefs.getUChar("valve_5", 100);
+  can_out.CTRL_VALVE.VALVE_6_REQ = prefs.getUChar("valve_6", 100);
+  can_out.CTRL_FAN.FAN_1_REQ     = prefs.getUChar("fan_1", 50);
+  can_out.CTRL_FAN.FAN_2_REQ     = prefs.getUChar("fan_2", 50);
+
+  lastChangingValue = millis();
+}
+
+void saveCurrentStatePoll(void)
+{
+  if(millis() - lastChangingValue > 10000)
+  {
+    prefs.putUChar("valve_1", can_out.CTRL_VALVE.VALVE_1_REQ);
+    prefs.putUChar("valve_2", can_out.CTRL_VALVE.VALVE_2_REQ);
+    prefs.putUChar("valve_3", can_out.CTRL_VALVE.VALVE_3_REQ);
+    prefs.putUChar("valve_4", can_out.CTRL_VALVE.VALVE_4_REQ);
+    prefs.putUChar("valve_5", can_out.CTRL_VALVE.VALVE_5_REQ);
+    prefs.putUChar("valve_6", can_out.CTRL_VALVE.VALVE_6_REQ);
+    prefs.putUChar("fan_1", can_out.CTRL_FAN.FAN_1_REQ);
+    prefs.putUChar("fan_2", can_out.CTRL_FAN.FAN_2_REQ);
+
+    lastChangingValue = millis();
+  }
+}
+
+void notifyChageValue(void)
+{
+  lastChangingValue = millis();
+}
+
+// === Функции таймеров ===
 void can_timer_init(void)
 {
   const esp_timer_create_args_t can_timer_args = {

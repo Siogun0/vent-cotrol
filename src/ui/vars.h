@@ -42,6 +42,22 @@ extern const char *get_var_power_str();
 extern void set_var_power_str(const char *value);
 extern const char *get_var_time_str();
 extern void set_var_time_str(const char *value);
+extern int32_t get_var_exhaust_fan_speed();
+extern void set_var_exhaust_fan_speed(int32_t value);
+extern int32_t get_var_supply_fan_speed();
+extern void set_var_supply_fan_speed(int32_t value);
+extern int32_t get_var_family_room_valve();
+extern void set_var_family_room_valve(int32_t value);
+extern int32_t get_var_master_badroom_valve();
+extern void set_var_master_badroom_valve(int32_t value);
+extern int32_t get_var_children_room_valve();
+extern void set_var_children_room_valve(int32_t value);
+extern int32_t get_var_pantry_room_valve();
+extern void set_var_pantry_room_valve(int32_t value);
+extern int32_t get_var_toilet_exhaust_valve();
+extern void set_var_toilet_exhaust_valve(int32_t value);
+extern int32_t get_var_bathroom_exhaust_valve();
+extern void set_var_bathroom_exhaust_valve(int32_t value);
 
 #ifdef __cplusplus
 }
