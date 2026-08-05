@@ -98,4 +98,9 @@ void screen_init(void)
   ledcWrite(GFX_BL, 255);                  // Управление пином напрямую вместо указания канала (макс. яркость)
 }
 
+void set_brightness(int value)
+{
+  ledcWrite(GFX_BL, value);
+}
+
 #endif //SCREEN_H

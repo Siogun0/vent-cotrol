@@ -17,13 +17,18 @@ extern "C" {
 
 #include "esp_timer.h"
 
-// #include "ds18b20.h"
+#define DS18B20_USED
+#ifdef DS18B20_USED
+#include "ds18b20.h"
+#endif
 
 volatile t_can_node_panel_bus0_input can_in;
 volatile t_can_node_panel_bus0_output can_out;
 
 const char* ntpServer = "pool.ntp.org";
 const char* timeZone = "MSK-3";
+
+volatile float temperatureSelf = DEVICE_DISCONNECTED_C;
 
 // === Native global variable ===
 char ip_address[] = "---.---.---.---";
@@ -71,6 +76,9 @@ void setup() {
   WiFi.begin();
   configTzTime(timeZone, ntpServer);
 
+  tempSensorInit();
+  // pinMode(40, OUTPUT); // Настраиваем 40-й пин как выход
+
   Serial.println("🎉 Система успешно запущена!");
 }
 
@@ -90,6 +98,12 @@ void loop() {
   can_node_panel_bus0_tx(&can_out);
 
   saveCurrentStatePoll();
+
+  // tempSensorPoll(&temperatureSelf);
+//   digitalWrite(40, HIGH); // Включаем (3.3В)
+//   delay(50);                        // Ждем полсекунды
+//   digitalWrite(40, LOW);  // Выключаем (0В)
+//   delay(50);
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
@@ -102,40 +116,6 @@ void action_connect_wifi(lv_event_t *e) {
   // Serial.println(lv_textarea_get_text(objects.ssid_text));
   // Serial.println(lv_textarea_get_text(objects.password_text));
 }
-
-void action_valve_value_changed(lv_event_t *e) {
-  // Получаем наше число из user_data
-    int32_t valve_id = (int32_t)(intptr_t)lv_event_get_user_data(e);
-    lv_obj_t* object = (lv_obj_t*)lv_event_get_target(e);
-    
-    switch(valve_id)
-    {
-      case 1:
-        can_out.CTRL_VALVE.VALVE_1_REQ = lv_slider_get_value(object);
-        break;
-      case 2:
-        can_out.CTRL_VALVE.VALVE_2_REQ = lv_slider_get_value(object);
-        break;
-      case 3:
-        can_out.CTRL_VALVE.VALVE_3_REQ = lv_slider_get_value(object);
-        break;
-      case 4:
-        can_out.CTRL_VALVE.VALVE_4_REQ = lv_slider_get_value(object);
-        break;
-      case 5:
-        can_out.CTRL_VALVE.VALVE_5_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
-        break;
-      case 6:
-        can_out.CTRL_VALVE.VALVE_6_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
-        break;
-      //TODO FAN control
-      case 0:
-        can_out.CTRL_FAN.FAN_1_REQ = lv_slider_get_value(object);
-        can_out.CTRL_FAN.FAN_2_REQ = lv_slider_get_value(object);
-    }
-    Serial.printf("Изменено значение клапана %d \n", valve_id);
-}
-
 
 // === Обновление глобальных переменных статуса ===
 void status_update_poll(void)
@@ -187,7 +167,13 @@ void status_update_poll(void)
     }
 
     // Temperature
-    sprintf(temperature_str, "%.1f°C %.0f%%", (float)can_in.VALVE_STATUS.CPU_TEMP, 66.6f);
+#ifdef DS18B20_USED
+  if (temperatureSelf > -126.0f)
+    sprintf(temperature_str, "%.2f°C", temperatureSelf);
+  else
+    sprintf(temperature_str, "--°C");
+#else
+#endif
   }
 }
 
@@ -339,6 +325,18 @@ void set_var_bathroom_exhaust_valve(int32_t value) {
     notifyChageValue();
 }
 
+int32_t brightness;
+
+int32_t get_var_brightness() {
+    return brightness;
+}
+
+void set_var_brightness(int32_t value) {
+    brightness = value;
+    set_brightness(brightness);
+    notifyChageValue();
+}
+
 // === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===
 uint32_t lastChangingValue = 0;
 
@@ -411,4 +409,40 @@ void screen_timer_update(void *arg)
 {
   status_bar_update_req = 1;
 }
+
+//TODO delete
+
+void action_valve_value_changed(lv_event_t *e) {
+  // Получаем наше число из user_data
+    int32_t valve_id = (int32_t)(intptr_t)lv_event_get_user_data(e);
+    lv_obj_t* object = (lv_obj_t*)lv_event_get_target(e);
+    
+    switch(valve_id)
+    {
+      case 1:
+        can_out.CTRL_VALVE.VALVE_1_REQ = lv_slider_get_value(object);
+        break;
+      case 2:
+        can_out.CTRL_VALVE.VALVE_2_REQ = lv_slider_get_value(object);
+        break;
+      case 3:
+        can_out.CTRL_VALVE.VALVE_3_REQ = lv_slider_get_value(object);
+        break;
+      case 4:
+        can_out.CTRL_VALVE.VALVE_4_REQ = lv_slider_get_value(object);
+        break;
+      case 5:
+        can_out.CTRL_VALVE.VALVE_5_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
+        break;
+      case 6:
+        can_out.CTRL_VALVE.VALVE_6_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
+        break;
+      //TODO FAN control
+      case 0:
+        can_out.CTRL_FAN.FAN_1_REQ = lv_slider_get_value(object);
+        can_out.CTRL_FAN.FAN_2_REQ = lv_slider_get_value(object);
+    }
+    Serial.printf("Изменено значение клапана %d \n", valve_id);
+}
+
 

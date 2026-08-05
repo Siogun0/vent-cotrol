@@ -12,15 +12,15 @@ extern "C" {
 enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
     SCREEN_ID_MANUAL = 1,
-    SCREEN_ID_SETTINGS = 2,
-    SCREEN_ID_MAIN = 3,
+    SCREEN_ID_MAIN = 2,
+    SCREEN_ID_SETTINGS = 3,
     _SCREEN_ID_LAST = 3
 };
 
 typedef struct _objects_t {
     lv_obj_t *manual;
-    lv_obj_t *settings;
     lv_obj_t *main;
+    lv_obj_t *settings;
     lv_obj_t *status_bar;
     lv_obj_t *status_bar__obj0;
     lv_obj_t *status_bar__time;
@@ -47,19 +47,20 @@ typedef struct _objects_t {
     lv_obj_t *fans;
     lv_obj_t *fans_common_speed;
     lv_obj_t *obj6;
-    lv_obj_t *debug;
+    lv_obj_t *fans_common_speed_1;
     lv_obj_t *obj7;
-    lv_obj_t *ssid_text;
     lv_obj_t *obj8;
-    lv_obj_t *password_text;
     lv_obj_t *obj9;
-    lv_obj_t *conect_wifi;
+    lv_obj_t *ssid_text;
     lv_obj_t *obj10;
+    lv_obj_t *password_text;
+    lv_obj_t *obj11;
+    lv_obj_t *conect_wifi;
+    lv_obj_t *obj12;
     lv_obj_t *ip_address;
     lv_obj_t *power_data_hiden;
     lv_obj_t *keyboard;
-    lv_obj_t *obj11;
-    lv_obj_t *obj12;
+    lv_obj_t *obj13;
 } objects_t;
 
 extern objects_t objects;
@@ -67,11 +68,11 @@ extern objects_t objects;
 void create_screen_manual();
 void tick_screen_manual();
 
-void create_screen_settings();
-void tick_screen_settings();
-
 void create_screen_main();
 void tick_screen_main();
+
+void create_screen_settings();
+void tick_screen_settings();
 
 void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_status_bar(void *flowState, int startWidgetIndex);

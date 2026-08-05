@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-extern const uint8_t assets[10092];
+extern const uint8_t assets[10596];
 
 void ui_init();
 void ui_tick();
