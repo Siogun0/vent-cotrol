@@ -12,7 +12,7 @@
 // Указываем пин подключения DATA
 #define ONE_WIRE_BUS 40
 
-extern volatile float temperatureSelf;
+extern volatile float temperatureSelf_1;
 
 // Настраиваем объект OneWire для работы по этому пину
 OneWire oneWire(ONE_WIRE_BUS);
@@ -40,14 +40,14 @@ void ds18b20Task(void *pvParameters)
     // 3. Читаем результат в глобальную переменную
     float temp = sensors.getTempCByIndex(0);
     // Защита памяти (атомарное обновление для простых типов данных)
-    temperatureSelf = temp;
+    temperatureSelf_1 = temp;
 
     // 4. Пауза между измерениями (например, 2 секунды)
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(2000-750));
   }
 }
 
-void tempSensorInit()
+void tempSensorInit_1()
 {
   // Создаем задачу FreeRTOS
   xTaskCreatePinnedToCore(

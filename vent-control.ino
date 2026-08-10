@@ -17,10 +17,14 @@ extern "C" {
 
 #include "esp_timer.h"
 
-#define DS18B20_USED
-#ifdef DS18B20_USED
+// #define DS18B20_USED
+#define DHT22_USED
+
+// #ifdef DS18B20_USED
 #include "ds18b20.h"
-#endif
+// #elif defined(DHT22_USED)
+#include "dht22.h"
+// #endif
 
 volatile t_can_node_panel_bus0_input can_in;
 volatile t_can_node_panel_bus0_output can_out;
@@ -28,11 +32,14 @@ volatile t_can_node_panel_bus0_output can_out;
 const char* ntpServer = "pool.ntp.org";
 const char* timeZone = "MSK-3";
 
-volatile float temperatureSelf = DEVICE_DISCONNECTED_C;
+volatile float temperatureSelf = -127.0f;
+volatile float temperatureSelf_1 = -127.0f;
+volatile float humiditySelf = -1.0f;
 
 // === Native global variable ===
 char ip_address[] = "---.---.---.---";
 char temperature_str[20] = { 0 };
+char temperature_str_1[20] = { 0 };
 char power_str[20] = { 0 };
 char time_str[10] = { 0 };
 status_color can_status = status_color_GREY;
@@ -47,9 +54,9 @@ void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
   // Инициализация CAN
-  platform_can_init();
-  can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
-  can_timer_init();
+  // platform_can_init();
+  // can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
+  // can_timer_init();
   loadLastState();
   
   // Инициализация экрана
@@ -77,7 +84,7 @@ void setup() {
   configTzTime(timeZone, ntpServer);
 
   tempSensorInit();
-  // pinMode(40, OUTPUT); // Настраиваем 40-й пин как выход
+  tempSensorInit_1();
 
   Serial.println("🎉 Система успешно запущена!");
 }
@@ -98,12 +105,6 @@ void loop() {
   can_node_panel_bus0_tx(&can_out);
 
   saveCurrentStatePoll();
-
-  // tempSensorPoll(&temperatureSelf);
-//   digitalWrite(40, HIGH); // Включаем (3.3В)
-//   delay(50);                        // Ждем полсекунды
-//   digitalWrite(40, LOW);  // Выключаем (0В)
-//   delay(50);
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
@@ -113,8 +114,6 @@ void action_connect_wifi(lv_event_t *e) {
     delay(100);
   }
   WiFi.begin(lv_textarea_get_text(objects.ssid_text), lv_textarea_get_text(objects.password_text));
-  // Serial.println(lv_textarea_get_text(objects.ssid_text));
-  // Serial.println(lv_textarea_get_text(objects.password_text));
 }
 
 // === Обновление глобальных переменных статуса ===
@@ -167,13 +166,19 @@ void status_update_poll(void)
     }
 
     // Temperature
-#ifdef DS18B20_USED
+// #ifdef DS18B20_USED
   if (temperatureSelf > -126.0f)
-    sprintf(temperature_str, "%.2f°C", temperatureSelf);
+    sprintf(temperature_str_1, "%.2f°C", temperatureSelf_1);
   else
     sprintf(temperature_str, "--°C");
-#else
-#endif
+// #elif defined(DHT22_USED)
+  if (temperatureSelf > -126.0f)
+    sprintf(temperature_str, "%.1f°C %.0f%%", temperatureSelf, humiditySelf);
+  else
+    sprintf(temperature_str, "--°C --%%");
+// #else
+//   sprintf("");
+// #endif
   }
 }
 
@@ -237,6 +242,14 @@ void set_var_temperature_str(const char *value) {
     temperature_str[sizeof(temperature_str) / sizeof(char) - 1] = 0;
 }
 
+const char *get_var_temperature_str_1() {
+    return temperature_str_1;
+}
+
+void set_var_temperature_str_1(const char *value) {
+    strncpy(temperature_str_1, value, sizeof(temperature_str_1) / sizeof(char));
+    temperature_str[sizeof(temperature_str_1) / sizeof(char) - 1] = 0;
+}
 // int32_t exhaust_fan_speed;
 
 int32_t get_var_exhaust_fan_speed() {

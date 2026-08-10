@@ -8,6 +8,8 @@ extern "C" {
 #endif
 
 extern const lv_font_t ui_font_roboto_condensed_semi_bold_20;
+extern const lv_font_t ui_font_roboto_black_150;
+extern const lv_font_t ui_font_roboto_black_80;
 
 #ifndef EXT_FONT_DESC_T
 #define EXT_FONT_DESC_T

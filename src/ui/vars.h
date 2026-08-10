@@ -58,8 +58,8 @@ extern int32_t get_var_toilet_exhaust_valve();
 extern void set_var_toilet_exhaust_valve(int32_t value);
 extern int32_t get_var_bathroom_exhaust_valve();
 extern void set_var_bathroom_exhaust_valve(int32_t value);
-extern int32_t get_var_brightness();
-extern void set_var_brightness(int32_t value);
+extern const char *get_var_temperature_str_1();
+extern void set_var_temperature_str_1(const char *value);
 
 #ifdef __cplusplus
 }
