@@ -17,9 +17,13 @@ extern "C" {
 
 #include "esp_timer.h"
 
-#define DS18B20_USED
+// #define DS18B20_USED
+#define DHT22_USED
+
 #ifdef DS18B20_USED
 #include "ds18b20.h"
+#elif defined(DHT22_USED)
+#include "dht22.h"
 #endif
 
 volatile t_can_node_panel_bus0_input can_in;
@@ -28,7 +32,8 @@ volatile t_can_node_panel_bus0_output can_out;
 const char* ntpServer = "pool.ntp.org";
 const char* timeZone = "MSK-3";
 
-volatile float temperatureSelf = DEVICE_DISCONNECTED_C;
+volatile float temperatureSelf = -127.0f;
+volatile float humiditySelf = -1.0f;
 
 // === Native global variable ===
 char ip_address[] = "---.---.---.---";
@@ -77,7 +82,6 @@ void setup() {
   configTzTime(timeZone, ntpServer);
 
   tempSensorInit();
-  // pinMode(40, OUTPUT); // Настраиваем 40-й пин как выход
 
   Serial.println("🎉 Система успешно запущена!");
 }
@@ -98,12 +102,6 @@ void loop() {
   can_node_panel_bus0_tx(&can_out);
 
   saveCurrentStatePoll();
-
-  // tempSensorPoll(&temperatureSelf);
-//   digitalWrite(40, HIGH); // Включаем (3.3В)
-//   delay(50);                        // Ждем полсекунды
-//   digitalWrite(40, LOW);  // Выключаем (0В)
-//   delay(50);
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
@@ -113,8 +111,6 @@ void action_connect_wifi(lv_event_t *e) {
     delay(100);
   }
   WiFi.begin(lv_textarea_get_text(objects.ssid_text), lv_textarea_get_text(objects.password_text));
-  // Serial.println(lv_textarea_get_text(objects.ssid_text));
-  // Serial.println(lv_textarea_get_text(objects.password_text));
 }
 
 // === Обновление глобальных переменных статуса ===
@@ -172,7 +168,13 @@ void status_update_poll(void)
     sprintf(temperature_str, "%.2f°C", temperatureSelf);
   else
     sprintf(temperature_str, "--°C");
+#elif defined(DHT22_USED)
+  if (temperatureSelf > -126.0f)
+    sprintf(temperature_str, "%.1f°C %.0f%%", temperatureSelf, humiditySelf);
+  else
+    sprintf(temperature_str, "--°C --%%");
 #else
+  sprintf("");
 #endif
   }
 }

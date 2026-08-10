@@ -43,7 +43,7 @@ void ds18b20Task(void *pvParameters)
     temperatureSelf = temp;
 
     // 4. Пауза между измерениями (например, 2 секунды)
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(2000-750));
   }
 }
 
