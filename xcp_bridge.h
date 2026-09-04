@@ -28,14 +28,14 @@ public:
     {
       _tcp_server = new AsyncServer(port);
       _tcp_server->onClient([this](void* arg, AsyncClient* client){
-        Serial.printf("Клиент подключился: %s\n", client->remoteIP().toString().c_str());
+        // Serial.printf("Клиент подключился: %s\n", client->remoteIP().toString().c_str());
 
         // Назначаем обработчик данных для этого клиента
         client->onData(&XcpBridge::receiveTcpPacket, this);
 
         // Коллбэк на отключение
         client->onDisconnect([this](void* arg, AsyncClient* client) {
-          Serial.printf("Клиент отключился\n");
+          // Serial.printf("Клиент отключился\n");
           delete client; // Освобождаем память
           _tcp_server = nullptr;
         }, this);
@@ -43,7 +43,7 @@ public:
       }, this);
 
       _tcp_server->begin();
-      Serial.printf("Сервер TCP запущен на порту %d\n", port);
+      Serial.printf("Сервер XCP<=>TCP запущен на порту %d\n", port);
     }
 
     if (type == XCP_UDP)
@@ -51,7 +51,7 @@ public:
       _udp_server = new AsyncUDP;
       _udp_server->listen(port);
       _udp_server->onPacket(&XcpBridge::receiveUdpPacket, this);
-      Serial.printf("Сервер UDP запущен на порту %d\n", port);
+      Serial.printf("Сервер XCP<=>UDP запущен на порту %d\n", port);
     }
 
     if (_tcp_server == nullptr && _udp_server == nullptr)
@@ -73,12 +73,22 @@ public:
     }
   }
 
+  void sendCanPacket(uint32_t id, uint8_t* data, uint8_t len)
+  {
+    twai_message_t msg;
+    msg.extd = 0;
+	  msg.rtr = 0;
+    msg.identifier = id;
+    uint8_t dlc = data[0];
 
-	uint32_t daq_number;
-	uint32_t can_num = 0;
-	
-	IPAddress udp_bind_IP; 
-	uint32_t udp_bind_port;
+    if (dlc <= 8 && (dlc + 4) <= len)
+    {
+      msg.data_length_code = dlc;
+      std::memcpy(msg.data, data + 4, dlc);
+
+      twai_transmit(&msg, pdMS_TO_TICKS(0));
+    }
+  }
 
   void ethernetPacketBuild(uint8_t* buf, uint8_t* input, uint8_t len)
   {    
@@ -94,40 +104,26 @@ public:
 
   void handleTcpPacket(AsyncClient* client, void* data_tcp, size_t len)
   {
-    twai_message_t msg;
     _connection_type = XCP_TCP;
     _tcp_client = client;
 
-    msg.extd = 0;
-	  msg.rtr = 0;
-    msg.identifier = _rx_id;
-    const uint8_t* data = (const uint8_t*)data_tcp;
-    size_t dlc = data[0];
-    msg.data_length_code = (dlc <= 8) ? dlc : 8;
-    std::memcpy(msg.data, data + 4, dlc);
-
-    twai_transmit(&msg, pdMS_TO_TICKS(0));
+    sendCanPacket(_rx_id, (uint8_t*)data_tcp, len);
   }
 
   static void receiveUdpPacket(void *arg, AsyncUDPPacket packet);
 
   void handleUdpPacket(AsyncUDPPacket packet)
   {
-    twai_message_t msg;
     _connection_type = XCP_UDP;
-    udp_bind_IP = packet.remoteIP();
-    udp_bind_port = packet.remotePort();
+    _udp_bind_IP = packet.remoteIP();
+    _udp_bind_port = packet.remotePort();
 
-    msg.identifier = _rx_id;
-    size_t dlc = packet.length() - 4;
-    msg.data_length_code = (dlc <= 8) ? dlc : 8;
-    const uint8_t* data = packet.data();
-    std::memcpy(msg.data, data + 4, dlc);
+    sendCanPacket(_rx_id, packet.data(), packet.length());
   }
 
   void receiveCanPacket(twai_message_t msg)
   {
-    Serial.printf("ID 0x%03X, DLC %d, data[0] 0x%02X\n", msg.identifier, msg.data_length_code, msg.data[0]);
+    // Serial.printf("ID 0x%03X, DLC %d, data[0] 0x%02X\n", msg.identifier, msg.data_length_code, msg.data[0]);
     if (msg.identifier == _tx_id)
     {
       ethernetPacketBuild(_buffer, msg.data, msg.data_length_code);
@@ -138,16 +134,19 @@ public:
           && _tcp_client->connected()
           && _tcp_client->space() >= ethernetPacketSize)
       {
-        Serial.println("отправлен по TCP");
+        // Serial.println("отправлен по TCP");
         _tcp_client->write((const char*)_buffer, ethernetPacketSize);
       }
       else if (_connection_type == XCP_UDP
-          && udp_bind_port != 0)
+          && _udp_server
+          && _udp_bind_port != 0)
       {
-
+        // Serial.println("отправлен по UDP");
+        _udp_server->writeTo(_buffer, ethernetPacketSize, _udp_bind_IP, _udp_bind_port);
       }
     }
   }
+
 
 private:
   AsyncUDP* _udp_server = nullptr;
@@ -155,9 +154,12 @@ private:
   AsyncClient* _tcp_client = nullptr;
   uint8_t _buffer[20];
   Xcp_connect_type _connection_type;
-	uint32_t _rx_id;
-	uint32_t _tx_id;
+  uint32_t _rx_id;
+  uint32_t _tx_id;
   uint16_t _cntr = 0;
+
+  IPAddress _udp_bind_IP;
+  uint16_t _udp_bind_port;
 };
 
 
@@ -173,10 +175,10 @@ void XcpBridge::receiveTcpPacket(void* arg, AsyncClient* client, void* data, siz
 }
 
 void XcpBridge::receiveUdpPacket(void *arg, AsyncUDPPacket packet) {
-  Serial.print("Получены данные от IP: ");
-  Serial.print(packet.remoteIP());
-  Serial.print(", Порт: ");
-  Serial.println(packet.remotePort());
+  // Serial.print("Получены данные от IP: ");
+  // Serial.print(packet.remoteIP());
+  // Serial.print(", Порт: ");
+  // Serial.println(packet.remotePort());
     // Извлекаем наш объект класса из void*
   XcpBridge* instance = static_cast<XcpBridge*>(arg);
     
