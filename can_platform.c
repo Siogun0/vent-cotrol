@@ -40,10 +40,8 @@ uint32_t platform_can_poll(uint32_t bus_id)
 
 void platform_can_init_rx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc)
 {
-	uint32_t mask_or_id;
-
-    virt_mbx[bus_id][mbn].id = id;
-    virt_mbx[bus_id][mbn].dlc = dlc;
+  virt_mbx[bus_id][mbn].id = id;
+  virt_mbx[bus_id][mbn].dlc = dlc;
 }
 
 void platform_can_init_tx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc)

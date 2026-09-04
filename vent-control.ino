@@ -18,6 +18,7 @@ extern "C" {
 #include "src/ui/vars.h"
 
 #include "esp_timer.h"
+#include "xcp_bridge.h"
 
 // #define DS18B20_USED
 #define DHT22_USED
@@ -48,68 +49,9 @@ status_color bt_status = status_color_GREY;
 
 int status_bar_update_req = 0;
 
-AsyncUDP udp;
-AsyncServer* server = nullptr;
+XcpBridge* xcpBridge_vent;
+XcpBridge* xcpBridge_vent1;
 Preferences prefs;
-
-// Функция обработки входящих данных от конкретного клиента
-void handleData(void* arg, AsyncClient* client, void* data, size_t len) {
-    uint8_t* buffer = (uint8_t*)data;
-
-    // Проверяем минимальную длину заголовка
-    if (len < 4) {
-        Serial.println("TCP Ошибка: Слишком короткий пакет!");
-        return;
-    }
-
-    // --- ПАРСЕР (ДЕКОДЕР) ---
-    uint16_t dataLength = (buffer[1] << 8) | buffer[0];
-    uint16_t counter    = (buffer[3] << 8) | buffer[2];
-
-    Serial.printf("=== TCP Пакет от %s ===\n", client->remoteIP().toString().c_str());
-    Serial.printf("Счетчик: %u, Ожидаемая длина payload: %u\n", counter, dataLength);
-
-    if (dataLength > 0 && len >= (4 + dataLength)) {
-        Serial.print("Данные (HEX): ");
-        for (size_t i = 4; i < 4 + dataLength; i++) {
-            Serial.printf("%02X ", buffer[i]);
-        }
-        Serial.println();
-    }
-
-    // Отправляем ответ обратно клиенту (эхо-сервер)
-            
-            switch (buffer[4])
-            {
-              case 0xFF:
-              {
-                uint8_t myReply[] = {0x08, 0x00, 0x00, 0x00, 0xFF, 0x11, 0x40, 0x08, 0x08, 0x00, 0x01, 0x00};
-                client->write((const char*)myReply, sizeof(myReply));
-                break;
-              }
-
-              case 0xFB:
-              {
-                uint8_t myReply[] = {0x08, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
-                client->write((const char*)myReply, sizeof(myReply));
-                break;
-              }
-
-              case 0xFD:
-              {
-                uint8_t myReply[] = {0x04, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
-                client->write((const char*)myReply, sizeof(myReply));
-                break;
-              }
-
-              default:
-              {
-                uint8_t myReply[] = {0x02, 0x00, 0x00, 0x00, 0xFE, 0x00};
-                client->write((const char*)myReply, sizeof(myReply));
-                break;
-              }
-            }
-}
 
 void setup() {
   Serial.begin(115200);
@@ -146,100 +88,10 @@ void setup() {
 
   tempSensorInit();
 
-  // Запуск UDP для XCP
-  if(udp.listen(18001)) {
-        Serial.print("UDP сервер слушает порт: ");
-        Serial.println(18001);
-        
-        // Назначаем функцию-обработчик входящих пакетов
-        udp.onPacket([](AsyncUDPPacket  packet) {
-            // Выводим информацию о том, откуда пришли данные
-            Serial.print("Получены данные от IP: ");
-            Serial.print(packet.remoteIP());
-            Serial.print(", Порт: ");
-            Serial.println(packet.remotePort());
-
-                // --- 1. ПАРСЕР (ДЕКОДЕР) ВХОДЯЩЕГО ПАКЕТА ---
-            const uint8_t* buffer = packet.data();
-
-            // Восстанавливаем 16-битные числа из двух байт (Big-Endian)
-            uint16_t dataLength = (buffer[1] << 8) | buffer[0];
-            uint16_t counter    = (buffer[3] << 8) | buffer[2];
-            Serial.printf("=== Получен пакет ===\n");
-            Serial.printf("Счетчик пакетов: %u\n", counter);
-            Serial.printf("Ожидаемая длина данных: %u байт\n", dataLength);
-
-            // Проверяем корректность структуры: совпадает ли заявленная длина с реальной
-            if (packet.length() != 4 + dataLength) {
-                Serial.printf("Предупреждение: Реальный размер полезных данных (%d) не совпадает с заголовком (%u)!\n", 
-                              packet.length() - 4, dataLength);
-            }
-
-            // Выводим саму полезную нагрузку (payload) в HEX, если она есть
-            if (dataLength > 0) {
-                Serial.print("Полезные данные (HEX): ");
-                for (size_t i = 4; i < packet.length(); i++) {
-                    Serial.printf("%02X ", buffer[i]);
-                }
-                Serial.println();
-            }
-            
-            // Отправляем ответ обратно клиенту (эхо-сервер)
-            
-            switch (buffer[4])
-            {
-              case 0xFF:
-              {
-                uint8_t myReply[] = {0x08, 0x00, 0x00, 0x00, 0xFF, 0x11, 0x40, 0x08, 0x08, 0x00, 0x01, 0x00};
-                packet.write(myReply, sizeof(myReply));
-                break;
-              }
-
-              case 0xFB:
-              {
-                uint8_t myReply[] = {0x08, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
-                packet.write(myReply, sizeof(myReply));
-                break;
-              }
-
-              case 0xFD:
-              {
-                uint8_t myReply[] = {0x04, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00};
-                packet.write(myReply, sizeof(myReply));
-                break;
-              }
-
-              default:
-              {
-                uint8_t myReply[] = {0x02, 0x00, 0x00, 0x00, 0xFE, 0x00};
-                packet.write(myReply, sizeof(myReply));
-                break;
-              }
-            }
-            
-        });
-
-        // Создаем TCP сервер
-        server = new AsyncServer(20001);
-
-        // Коллбэк на новое подключение клиента
-        server->onClient([](void* arg, AsyncClient* client) {
-            Serial.printf("Клиент подключился: %s\n", client->remoteIP().toString().c_str());
-
-            // Назначаем обработчик данных для этого клиента
-            client->onData(&handleData, NULL);
-
-            // Коллбэк на отключение
-            client->onDisconnect([](void* arg, AsyncClient* c) {
-                Serial.printf("Клиент отключился\n");
-                delete c; // Освобождаем память
-            }, NULL);
-            
-        }, NULL);
-
-        // Запуск сервера
-        server->begin();
-    }
+  // TCP for XCP
+  xcpBridge_vent = new XcpBridge(XCP_TCP, 20001, 0x7AE, 0x7AF);
+  xcpBridge_vent1 = new XcpBridge(XCP_UDP, 18001, 0x25, 0x26);
+  platform_can_init_rx_mb(0, MBN_NEXT_FREE_BUS_0, 0x7AF, 8);
 
   Serial.println("🎉 Система успешно запущена!");
 }
@@ -260,6 +112,28 @@ void loop() {
   can_node_panel_bus0_tx(&can_out);
 
   saveCurrentStatePoll();
+
+// TCP for XCP костыль
+  if(platform_can_is_message_arrived(0, MBN_NEXT_FREE_BUS_0))
+	{
+		uint64_t msg = platform_can_get_mb_data(0, MBN_NEXT_FREE_BUS_0);
+    twai_message_t twai_message;
+    twai_message.identifier = 0x7AF;
+    twai_message.extd = 0;
+	  twai_message.rtr = 0;
+    twai_message.data_length_code = 8;
+    twai_message.data[0] = (msg >> 0) & 0xFF;
+    twai_message.data[1] = (msg >> 8) & 0xFF;
+    twai_message.data[2] = (msg >> 16) & 0xFF;
+    twai_message.data[3] = (msg >> 24) & 0xFF;
+    twai_message.data[4] = (msg >> 32) & 0xFF;
+    twai_message.data[5] = (msg >> 40) & 0xFF;
+    twai_message.data[6] = (msg >> 48) & 0xFF;
+    twai_message.data[7] = (msg >> 56) & 0xFF;
+    Serial.println("XCP пакет принят");
+    if (xcpBridge_vent)
+		  xcpBridge_vent->receiveCanPacket(twai_message);
+	}
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
