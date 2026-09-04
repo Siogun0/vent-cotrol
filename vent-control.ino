@@ -89,8 +89,7 @@ void setup() {
   tempSensorInit();
 
   // TCP for XCP
-  xcpBridge_vent = new XcpBridge(XCP_TCP, 20001, 0x7AE, 0x7AF);
-  xcpBridge_vent1 = new XcpBridge(XCP_UDP, 18001, 0x7AE, 0x7AF);
+  xcpBridge_vent = new XcpBridge(XCP_UDP_TCP, 18001, 20001, 0x7AE, 0x7AF);
   platform_can_init_rx_mb(0, MBN_NEXT_FREE_BUS_0, 0x7AF, 8);
 
   Serial.println("🎉 Система успешно запущена!");
@@ -130,11 +129,8 @@ void loop() {
     twai_message.data[5] = (msg >> 40) & 0xFF;
     twai_message.data[6] = (msg >> 48) & 0xFF;
     twai_message.data[7] = (msg >> 56) & 0xFF;
-    Serial.println("XCP пакет принят");
     if (xcpBridge_vent)
 		  xcpBridge_vent->receiveCanPacket(twai_message);
-    if (xcpBridge_vent1)
-		  xcpBridge_vent1->receiveCanPacket(twai_message);
 	}
 }
 

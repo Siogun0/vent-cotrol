@@ -18,15 +18,15 @@ enum Xcp_connect_type
 class XcpBridge
 {
 public:
-  XcpBridge(Xcp_connect_type type, uint32_t port, uint32_t device_rx_id, uint32_t device_tx_id, uint32_t daq = 0)
+  XcpBridge(Xcp_connect_type type, uint32_t udp_port, uint32_t tcp_port,  uint32_t device_rx_id, uint32_t device_tx_id, uint32_t daq = 0)
   {
     _rx_id = device_rx_id;
     _tx_id = device_tx_id;
-    daq_number = daq;
+    // daq_number = daq;
 
-    if (type == XCP_TCP)
+    if (type == XCP_TCP || type == XCP_UDP_TCP)
     {
-      _tcp_server = new AsyncServer(port);
+      _tcp_server = new AsyncServer(tcp_port);
       _tcp_server->onClient([this](void* arg, AsyncClient* client){
         // Serial.printf("Клиент подключился: %s\n", client->remoteIP().toString().c_str());
 
@@ -43,15 +43,15 @@ public:
       }, this);
 
       _tcp_server->begin();
-      Serial.printf("Сервер XCP<=>TCP запущен на порту %d\n", port);
+      Serial.printf("Сервер XCP<=>TCP запущен на порту %d для ID >0x%03X <0x%03X\n", tcp_port, _rx_id, _tx_id);
     }
 
-    if (type == XCP_UDP)
+    if (type == XCP_UDP || type == XCP_UDP_TCP)
     {
       _udp_server = new AsyncUDP;
-      _udp_server->listen(port);
+      _udp_server->listen(udp_port);
       _udp_server->onPacket(&XcpBridge::receiveUdpPacket, this);
-      Serial.printf("Сервер XCP<=>UDP запущен на порту %d\n", port);
+      Serial.printf("Сервер XCP<=>UDP запущен на порту %d для ID >0x%03X <0x%03X\n", udp_port, _rx_id, _tx_id);
     }
 
     if (_tcp_server == nullptr && _udp_server == nullptr)
