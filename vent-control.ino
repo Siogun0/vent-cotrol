@@ -20,8 +20,8 @@ extern "C" {
 #include "esp_timer.h"
 #include "xcp_bridge.h"
 
-// #define DS18B20_USED
-#define DHT22_USED
+#define DS18B20_USED
+// #define DHT22_USED
 
 #ifdef DS18B20_USED
 #include "ds18b20.h"
@@ -357,16 +357,65 @@ void set_var_bathroom_exhaust_valve(int32_t value) {
     notifyChageValue();
 }
 
-int32_t brightness;
+int32_t brightness = 255;
 
 int32_t get_var_brightness() {
     return brightness;
 }
 
 void set_var_brightness(int32_t value) {
-    brightness = value;
+    brightness = constrain(value, 0, 255);
     set_brightness(brightness);
     notifyChageValue();
+}
+
+int32_t brightness_idle = 128;
+
+int32_t get_var_brightness_idle() {
+    return brightness_idle;
+}
+
+void set_var_brightness_idle(int32_t value) {
+    brightness_idle = constrain(value, 0, 255);
+    notifyChageValue();
+}
+
+int32_t idle_timeout = 5;
+
+int32_t get_var_idle_timeout() {
+    return idle_timeout;
+}
+
+void set_var_idle_timeout(int32_t value) {
+    idle_timeout = value;
+    notifyChageValue();
+}
+
+bool idle_is_active = false;
+
+bool get_var_idle_is_active() {
+  if (lv_display_get_inactive_time(NULL) > idle_timeout * 1000)
+  {
+    if (!idle_is_active)
+    {
+      set_brightness(brightness_idle);
+    }
+    idle_is_active = true;
+  }
+  else
+  {
+    if (idle_is_active)
+    {
+      set_brightness(brightness);
+    }
+    idle_is_active = false;
+  }
+  return idle_is_active;
+}
+
+void set_var_idle_is_active(bool value) {
+    // idle_is_active = value;
+    Serial.println("Idle is active");
 }
 
 // === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===
@@ -384,6 +433,11 @@ void loadLastState(void)
   can_out.CTRL_FAN.FAN_1_REQ     = prefs.getUChar("fan_1", 50);
   can_out.CTRL_FAN.FAN_2_REQ     = prefs.getUChar("fan_2", 50);
 
+  prefs.begin("settings");
+  brightness = prefs.getUChar("brightness", 255);
+  brightness_idle = prefs.getUChar("brightness_idle", 100);
+  idle_timeout = prefs.getInt("idle_timeout", 30);
+
   lastChangingValue = millis();
 }
 
@@ -399,6 +453,10 @@ void saveCurrentStatePoll(void)
     prefs.putUChar("valve_6", can_out.CTRL_VALVE.VALVE_6_REQ);
     prefs.putUChar("fan_1", can_out.CTRL_FAN.FAN_1_REQ);
     prefs.putUChar("fan_2", can_out.CTRL_FAN.FAN_2_REQ);
+
+    prefs.putUChar("brightness", brightness);
+    prefs.putUChar("brightness_idle", brightness_idle);
+    prefs.putInt("idle_timeout", idle_timeout);
 
     lastChangingValue = millis();
   }
@@ -444,37 +502,5 @@ void screen_timer_update(void *arg)
 
 //TODO delete
 
-void action_valve_value_changed(lv_event_t *e) {
-  // Получаем наше число из user_data
-    int32_t valve_id = (int32_t)(intptr_t)lv_event_get_user_data(e);
-    lv_obj_t* object = (lv_obj_t*)lv_event_get_target(e);
-    
-    switch(valve_id)
-    {
-      case 1:
-        can_out.CTRL_VALVE.VALVE_1_REQ = lv_slider_get_value(object);
-        break;
-      case 2:
-        can_out.CTRL_VALVE.VALVE_2_REQ = lv_slider_get_value(object);
-        break;
-      case 3:
-        can_out.CTRL_VALVE.VALVE_3_REQ = lv_slider_get_value(object);
-        break;
-      case 4:
-        can_out.CTRL_VALVE.VALVE_4_REQ = lv_slider_get_value(object);
-        break;
-      case 5:
-        can_out.CTRL_VALVE.VALVE_5_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
-        break;
-      case 6:
-        can_out.CTRL_VALVE.VALVE_6_REQ = lv_obj_has_state(object, LV_STATE_CHECKED) ? 100 : 0;
-        break;
-      //TODO FAN control
-      case 0:
-        can_out.CTRL_FAN.FAN_1_REQ = lv_slider_get_value(object);
-        can_out.CTRL_FAN.FAN_2_REQ = lv_slider_get_value(object);
-    }
-    Serial.printf("Изменено значение клапана %d \n", valve_id);
-}
 
 

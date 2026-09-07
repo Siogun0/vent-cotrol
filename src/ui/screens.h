@@ -11,18 +11,18 @@ extern "C" {
 
 enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
-    SCREEN_ID_IDLE = 1,
-    SCREEN_ID_MANUAL = 2,
-    SCREEN_ID_MAIN = 3,
-    SCREEN_ID_SETTINGS = 4,
+    SCREEN_ID_MANUAL = 1,
+    SCREEN_ID_MAIN = 2,
+    SCREEN_ID_SETTINGS = 3,
+    SCREEN_ID_IDLE = 4,
     _SCREEN_ID_LAST = 4
 };
 
 typedef struct _objects_t {
-    lv_obj_t *idle;
     lv_obj_t *manual;
     lv_obj_t *main;
     lv_obj_t *settings;
+    lv_obj_t *idle;
     lv_obj_t *status_bar;
     lv_obj_t *status_bar__obj0;
     lv_obj_t *status_bar__time;
@@ -31,8 +31,6 @@ typedef struct _objects_t {
     lv_obj_t *status_bar__bluetooth;
     lv_obj_t *status_bar__temperature;
     lv_obj_t *status_bar__power_param;
-    lv_obj_t *idle_time;
-    lv_obj_t *idle_temperature;
     lv_obj_t *background_image;
     lv_obj_t *input_flow;
     lv_obj_t *valve1;
@@ -55,22 +53,23 @@ typedef struct _objects_t {
     lv_obj_t *obj7;
     lv_obj_t *obj8;
     lv_obj_t *obj9;
-    lv_obj_t *obj10;
     lv_obj_t *ssid_text;
-    lv_obj_t *obj11;
+    lv_obj_t *obj10;
     lv_obj_t *password_text;
-    lv_obj_t *obj12;
+    lv_obj_t *obj11;
     lv_obj_t *conect_wifi;
-    lv_obj_t *obj13;
     lv_obj_t *ip_address;
     lv_obj_t *power_data_hiden;
     lv_obj_t *keyboard;
+    lv_obj_t *brightnes_slider;
+    lv_obj_t *brightnes_idle_slider;
+    lv_obj_t *idle_timeout;
+    lv_obj_t *numboard;
+    lv_obj_t *idle_time;
+    lv_obj_t *idle_temperature;
 } objects_t;
 
 extern objects_t objects;
-
-void create_screen_idle();
-void tick_screen_idle();
 
 void create_screen_manual();
 void tick_screen_manual();
@@ -80,6 +79,9 @@ void tick_screen_main();
 
 void create_screen_settings();
 void tick_screen_settings();
+
+void create_screen_idle();
+void tick_screen_idle();
 
 void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_status_bar(void *flowState, int startWidgetIndex);

@@ -23,7 +23,9 @@ typedef enum {
 // Flow global variables
 
 enum FlowGlobalVariables {
-    FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0
+    FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0,
+    FLOW_GLOBAL_VARIABLE_SCREENS_ARRAY = 1,
+    FLOW_GLOBAL_VARIABLE_SCREEN_INDEX = 2
 };
 
 // Native global variables
@@ -60,6 +62,12 @@ extern int32_t get_var_bathroom_exhaust_valve();
 extern void set_var_bathroom_exhaust_valve(int32_t value);
 extern int32_t get_var_brightness();
 extern void set_var_brightness(int32_t value);
+extern int32_t get_var_brightness_idle();
+extern void set_var_brightness_idle(int32_t value);
+extern int32_t get_var_idle_timeout();
+extern void set_var_idle_timeout(int32_t value);
+extern bool get_var_idle_is_active();
+extern void set_var_idle_is_active(bool value);
 
 #ifdef __cplusplus
 }
