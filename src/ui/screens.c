@@ -44,10 +44,6 @@ static void event_handler_cb_manual_valve1(lv_event_t *e) {
             assignIntegerProperty(flowState, 5, 3, value, "Failed to assign Value in Slider widget");
         }
     }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)1;
-        flowPropagateValueLVGLEvent(flowState, 5, 0, e);
-    }
 }
 
 static void event_handler_cb_manual_valve2(lv_event_t *e) {
@@ -61,10 +57,6 @@ static void event_handler_cb_manual_valve2(lv_event_t *e) {
             int32_t value = lv_slider_get_value(ta);
             assignIntegerProperty(flowState, 7, 3, value, "Failed to assign Value in Slider widget");
         }
-    }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)2;
-        flowPropagateValueLVGLEvent(flowState, 7, 0, e);
     }
 }
 
@@ -80,10 +72,6 @@ static void event_handler_cb_manual_valve3(lv_event_t *e) {
             assignIntegerProperty(flowState, 9, 3, value, "Failed to assign Value in Slider widget");
         }
     }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)3;
-        flowPropagateValueLVGLEvent(flowState, 9, 0, e);
-    }
 }
 
 static void event_handler_cb_manual_valve4(lv_event_t *e) {
@@ -97,10 +85,6 @@ static void event_handler_cb_manual_valve4(lv_event_t *e) {
             int32_t value = lv_slider_get_value(ta);
             assignIntegerProperty(flowState, 11, 3, value, "Failed to assign Value in Slider widget");
         }
-    }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)4;
-        flowPropagateValueLVGLEvent(flowState, 11, 0, e);
     }
 }
 
@@ -116,10 +100,6 @@ static void event_handler_cb_manual_valve5(lv_event_t *e) {
             assignIntegerProperty(flowState, 17, 3, value, "Failed to assign Value in Slider widget");
         }
     }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 17, 0, e);
-    }
 }
 
 static void event_handler_cb_manual_valve6(lv_event_t *e) {
@@ -133,10 +113,6 @@ static void event_handler_cb_manual_valve6(lv_event_t *e) {
             int32_t value = lv_slider_get_value(ta);
             assignIntegerProperty(flowState, 18, 3, value, "Failed to assign Value in Slider widget");
         }
-    }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 18, 0, e);
     }
 }
 
@@ -152,10 +128,6 @@ static void event_handler_cb_manual_fans_common_speed(lv_event_t *e) {
             assignIntegerProperty(flowState, 21, 3, value, "Failed to assign Value in Slider widget");
         }
     }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 21, 0, e);
-    }
 }
 
 static void event_handler_cb_manual_fans_common_speed_1(lv_event_t *e) {
@@ -169,10 +141,6 @@ static void event_handler_cb_manual_fans_common_speed_1(lv_event_t *e) {
             int32_t value = lv_slider_get_value(ta);
             assignIntegerProperty(flowState, 23, 3, value, "Failed to assign Value in Slider widget");
         }
-    }
-    if (event == LV_EVENT_VALUE_CHANGED) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 23, 0, e);
     }
 }
 

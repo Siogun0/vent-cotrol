@@ -1471,13 +1471,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "975b0fae-45de-4109-8da6-caef36137d87",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "2479537a-9faa-4964-c825-7540150e7eea",
                     "useStyle": "default",
@@ -1485,15 +1479,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "94e2da02-6681-4070-f238-44a155a55b6a",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 1
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve1",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -1588,13 +1574,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "14751c8b-846f-4542-b592-24651c1b1f40",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "8aaee29d-a51a-4fa7-b12e-84a43f390495",
                     "useStyle": "default",
@@ -1602,15 +1582,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "c9b650d6-f5d5-467c-8f5d-6c878e91caa3",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 2
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve2",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -1705,13 +1677,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "b0a8b9e9-fafa-42e9-fe38-3ae1b57a61c0",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "71437c60-9dbc-4bf9-c309-f6b651425dff",
                     "useStyle": "default",
@@ -1719,15 +1685,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "9f929195-00dc-4527-eaca-04a0c15bed78",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 3
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve3",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -1822,13 +1780,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "542be2bb-739f-4730-e03c-66a3bad7f330",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "f0a4f2c9-f78e-49c6-976b-049f8f9dd4a8",
                     "useStyle": "default",
@@ -1836,15 +1788,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "ac5bb068-cdcc-449e-c8b7-5f2a8c003c9c",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 4
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve4",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -2147,13 +2091,7 @@
                   "width": 85,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "8c8db580-efba-4b34-97ef-8363b036cdf6",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "48597ff7-3ded-4b4b-be16-e3e879e6b33c",
                     "useStyle": "default",
@@ -2161,15 +2099,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "11d74bc7-6b93-4d58-af2a-9a8516bac69c",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "ConnectWifi",
-                      "userData": 0
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve5",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -2213,13 +2143,7 @@
                   "width": 85,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "457bc440-8761-49df-cdd2-f92ad751cb83",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "3fc5900e-5e18-4b3e-ebb7-09a75c9babe5",
                     "useStyle": "default",
@@ -2227,15 +2151,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "ecfe4803-13c0-4035-f9ba-820ad58e6daf",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "ConnectWifi",
-                      "userData": 0
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Valve6",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -2385,13 +2301,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "12cb677c-6099-4382-a762-dbac4f4dcf7c",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "51e24c50-f74f-4664-a7c9-21f75a958eea",
                     "useStyle": "default",
@@ -2399,15 +2309,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "4c8204a0-e340-45e1-d504-4db42b390c60",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 0
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Fans_Common_Speed",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -2435,7 +2337,7 @@
                   "max": 4,
                   "maxType": "literal",
                   "mode": "NORMAL",
-                  "value": "exhaust_fan_speed",
+                  "value": "supply_fan_speed",
                   "valueType": "expression",
                   "previewValue": "2",
                   "valueLeft": 0,
@@ -2502,13 +2404,7 @@
                   "width": 325,
                   "height": 10,
                   "customInputs": [],
-                  "customOutputs": [
-                    {
-                      "objID": "d2c29ee4-057d-4e5e-ce6a-fae8003c963b",
-                      "name": "value",
-                      "type": "integer"
-                    }
-                  ],
+                  "customOutputs": [],
                   "style": {
                     "objID": "2b667719-7fbd-4f1e-f434-85c424e6c9ec",
                     "useStyle": "default",
@@ -2516,15 +2412,7 @@
                     "childStyles": []
                   },
                   "timeline": [],
-                  "eventHandlers": [
-                    {
-                      "objID": "cd632590-dde0-481a-a85c-1e239220d3d0",
-                      "eventName": "VALUE_CHANGED",
-                      "handlerType": "flow",
-                      "action": "Valve_value_changed",
-                      "userData": 0
-                    }
-                  ],
+                  "eventHandlers": [],
                   "identifier": "Fans_Common_Speed_1",
                   "leftUnit": "px",
                   "topUnit": "px",
@@ -2690,194 +2578,10 @@
           "customOutputs": []
         },
         {
-          "objID": "dd0b58fa-9eaf-4be2-f867-6a3f7b5bc23f",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": -72,
-          "width": 242,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "6cbc53fc-8eb6-4beb-bf07-d58a072110f6",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "bccad6d0-6bbe-4bb3-ed5e-5c932c8fb6c1",
-              "variable": "exhaust_fan_speed",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "3ad694c1-7a6f-483b-cf18-dd9e94e7165f",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 67,
-          "width": 242,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "3079e46c-51b4-482a-d036-f9e0c87cf726",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "1082bd09-6734-4019-d46e-cd432cb948b4",
-              "variable": "family_room_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "30d7946e-f35a-4074-b700-11476d866f40",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 133,
-          "width": 260,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "d1bdc660-489d-4bf0-eb6b-1130f731acbf",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "490c217c-b64d-49df-a8c9-780dfb2251ef",
-              "variable": "master_badroom_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "2460c6f7-dac9-4229-cc98-7183ba06666b",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 201,
-          "width": 254,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "f659fae5-775b-46cd-9067-aa5857e4cf9c",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "88b9146d-e69c-45bc-ebca-667e928736d6",
-              "variable": "children_room_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "7441f439-87c9-495f-8e27-8bf3ddf24dc8",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 268,
-          "width": 242,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "ac64ae15-e669-4c0a-9b5c-60906364cb21",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "86a35ce9-c614-4fed-aabb-9c86631acbe3",
-              "variable": "pantry_room_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "e96ed478-d7c8-4891-8d0f-5e444465eb9b",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 336,
-          "width": 260,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "aa4e1794-d57a-40ba-db5f-395cfc7db83d",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "1a9d742e-6b77-4a25-a66f-389c727cb6ba",
-              "variable": "toilet_exhaust_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "b5a853c9-9347-4711-fa0f-2c57900e5246",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 403,
-          "width": 273,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "97d98c9b-b475-43c3-9a7f-c9ef0dc807ed",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "fb27625f-a9b7-4bb9-a3c0-85e452a92144",
-              "variable": "bathroom_exhaust_valve",
-              "value": "value"
-            }
-          ]
-        },
-        {
-          "objID": "b9b838fe-1ca7-4777-d489-7e73629ab1b5",
-          "type": "SetVariableActionComponent",
-          "left": 623,
-          "top": 0,
-          "width": 242,
-          "height": 56,
-          "customInputs": [
-            {
-              "objID": "f81de9cf-aa40-4c36-888a-0ddca8c79f07",
-              "name": "value",
-              "type": "integer"
-            }
-          ],
-          "customOutputs": [],
-          "entries": [
-            {
-              "objID": "381f3287-f2f1-4125-8de1-de46ff421bf1",
-              "variable": "exhaust_fan_speed",
-              "value": "value"
-            }
-          ]
-        },
-        {
           "objID": "0b3d7df4-7186-462b-e888-e898aa7add57",
           "type": "CallActionActionComponent",
-          "left": 623,
-          "top": -152,
+          "left": 524,
+          "top": 202,
           "width": 99,
           "height": 51,
           "customInputs": [],
@@ -2896,118 +2600,6 @@
           "output": "@seqout",
           "target": "858d7153-a3a2-46a4-e1be-604604a7eca2",
           "input": "@seqin"
-        },
-        {
-          "objID": "2f248674-21af-4b2a-c0e8-74aba5b6092e",
-          "source": "0be2a304-07c3-420c-c0fa-3af32524f5ad",
-          "output": "VALUE_CHANGED",
-          "target": "dd0b58fa-9eaf-4be2-f867-6a3f7b5bc23f",
-          "input": "@seqin"
-        },
-        {
-          "objID": "ac110059-3f99-44bc-f282-685efa0648ce",
-          "source": "0be2a304-07c3-420c-c0fa-3af32524f5ad",
-          "output": "value",
-          "target": "dd0b58fa-9eaf-4be2-f867-6a3f7b5bc23f",
-          "input": "value"
-        },
-        {
-          "objID": "5f819717-d8db-439e-ccaf-4af287e2664f",
-          "source": "78b51271-4619-4e1e-b6ef-c2a6e65a385a",
-          "output": "value",
-          "target": "3ad694c1-7a6f-483b-cf18-dd9e94e7165f",
-          "input": "value"
-        },
-        {
-          "objID": "101f9f74-af7e-48d2-85a6-7a67e72b10f3",
-          "source": "78b51271-4619-4e1e-b6ef-c2a6e65a385a",
-          "output": "VALUE_CHANGED",
-          "target": "3ad694c1-7a6f-483b-cf18-dd9e94e7165f",
-          "input": "@seqin"
-        },
-        {
-          "objID": "d606adb8-6876-4cc1-ff6b-9589ad12278d",
-          "source": "b7232495-18dc-4d3b-af7e-ac8bd7425473",
-          "output": "VALUE_CHANGED",
-          "target": "30d7946e-f35a-4074-b700-11476d866f40",
-          "input": "@seqin"
-        },
-        {
-          "objID": "4bc7f5b4-5ad3-4ded-d263-726debe93283",
-          "source": "b7232495-18dc-4d3b-af7e-ac8bd7425473",
-          "output": "value",
-          "target": "30d7946e-f35a-4074-b700-11476d866f40",
-          "input": "value"
-        },
-        {
-          "objID": "de10eb7b-04cc-4c20-8bdd-a3b9f3f231e7",
-          "source": "fa1cbb56-a609-42f0-d30b-488abcc053eb",
-          "output": "VALUE_CHANGED",
-          "target": "2460c6f7-dac9-4229-cc98-7183ba06666b",
-          "input": "@seqin"
-        },
-        {
-          "objID": "9d36eeac-51ec-40d6-e06c-d9a797ba815d",
-          "source": "fa1cbb56-a609-42f0-d30b-488abcc053eb",
-          "output": "value",
-          "target": "2460c6f7-dac9-4229-cc98-7183ba06666b",
-          "input": "value"
-        },
-        {
-          "objID": "a1ac2f23-add5-4141-df5e-63372286ddb8",
-          "source": "9964dad8-b631-4c06-d440-f5ebbaf76529",
-          "output": "VALUE_CHANGED",
-          "target": "7441f439-87c9-495f-8e27-8bf3ddf24dc8",
-          "input": "@seqin"
-        },
-        {
-          "objID": "6f6d7949-b428-46dc-8a30-c0f2c77feb9d",
-          "source": "9964dad8-b631-4c06-d440-f5ebbaf76529",
-          "output": "value",
-          "target": "7441f439-87c9-495f-8e27-8bf3ddf24dc8",
-          "input": "value"
-        },
-        {
-          "objID": "802d2d45-a0b3-4570-c123-5b391b67240c",
-          "source": "09595763-8d25-4a16-9d4b-6cb5c3c0dad8",
-          "output": "VALUE_CHANGED",
-          "target": "e96ed478-d7c8-4891-8d0f-5e444465eb9b",
-          "input": "@seqin"
-        },
-        {
-          "objID": "ce5d0778-336f-4652-e6ee-9803026532b1",
-          "source": "09595763-8d25-4a16-9d4b-6cb5c3c0dad8",
-          "output": "value",
-          "target": "e96ed478-d7c8-4891-8d0f-5e444465eb9b",
-          "input": "value"
-        },
-        {
-          "objID": "b1a5a3c8-2e70-4464-bd6b-f4658a23573f",
-          "source": "e1cf99f9-dbdf-43b4-fb9d-f40cc5428745",
-          "output": "VALUE_CHANGED",
-          "target": "b5a853c9-9347-4711-fa0f-2c57900e5246",
-          "input": "@seqin"
-        },
-        {
-          "objID": "ee4dae6b-491d-4925-8e1f-1b8b15e0a679",
-          "source": "e1cf99f9-dbdf-43b4-fb9d-f40cc5428745",
-          "output": "value",
-          "target": "b5a853c9-9347-4711-fa0f-2c57900e5246",
-          "input": "value"
-        },
-        {
-          "objID": "8f30762f-6a2b-44dd-ddf9-5ea5fae9ac96",
-          "source": "6f8d1ba4-559b-46c7-b3a3-834644c5483d",
-          "output": "VALUE_CHANGED",
-          "target": "b9b838fe-1ca7-4777-d489-7e73629ab1b5",
-          "input": "@seqin"
-        },
-        {
-          "objID": "9089f0d1-6352-48ca-c858-2e5007704b3a",
-          "source": "6f8d1ba4-559b-46c7-b3a3-834644c5483d",
-          "output": "value",
-          "target": "b9b838fe-1ca7-4777-d489-7e73629ab1b5",
-          "input": "value"
         },
         {
           "objID": "ceba32fc-dae9-45f1-86a2-798eedf6462d",
@@ -4150,8 +3742,8 @@
         {
           "objID": "339117cf-79da-4f73-c5dc-150cc14106c8",
           "type": "LVGLActionComponent",
-          "left": 521,
-          "top": 386,
+          "left": 724,
+          "top": 318,
           "width": 206,
           "height": 53,
           "customInputs": [],
@@ -4241,7 +3833,7 @@
           "objID": "b2222e5a-8a69-4016-9d26-9514372959f5",
           "type": "WatchVariableActionComponent",
           "left": 139,
-          "top": 616,
+          "top": 653,
           "width": 135,
           "height": 53,
           "customInputs": [],
@@ -4252,7 +3844,7 @@
           "objID": "b2f8c6ff-dd08-40e4-f16e-a35e24adcb25",
           "type": "LVGLActionComponent",
           "left": 317,
-          "top": 618,
+          "top": 655,
           "width": 249,
           "height": 53,
           "customInputs": [],
@@ -4271,8 +3863,8 @@
         {
           "objID": "48eb11de-324a-4497-cf45-1ff5ade28fed",
           "type": "SetVariableActionComponent",
-          "left": 526,
-          "top": 452,
+          "left": 548,
+          "top": 432,
           "width": 269,
           "height": 56,
           "customInputs": [],
@@ -4288,8 +3880,8 @@
         {
           "objID": "7a2f0700-c99a-437f-e8fb-d0059022071f",
           "type": "LVGLActionComponent",
-          "left": 841,
-          "top": 452,
+          "left": 866,
+          "top": 432,
           "width": 402,
           "height": 53,
           "customInputs": [],
@@ -4348,8 +3940,8 @@
         {
           "objID": "2ef22428-33a4-4cee-8211-1a5853a0ef16",
           "type": "LVGLActionComponent",
-          "left": 527,
-          "top": 518,
+          "left": 724,
+          "top": 256,
           "width": 206,
           "height": 53,
           "customInputs": [],
@@ -4368,8 +3960,8 @@
         {
           "objID": "023565db-b381-4512-9a91-da2a490e458b",
           "type": "SetVariableActionComponent",
-          "left": 630,
-          "top": 754,
+          "left": 566,
+          "top": 575,
           "width": 361,
           "height": 56,
           "customInputs": [],
@@ -4385,8 +3977,8 @@
         {
           "objID": "709a217d-f429-4619-9b4f-2358a47ed835",
           "type": "SetVariableActionComponent",
-          "left": 630,
-          "top": 684,
+          "left": 566,
+          "top": 508,
           "width": 373,
           "height": 56,
           "customInputs": [],
@@ -4403,7 +3995,7 @@
           "objID": "bc4fdb5d-d3a8-45c9-f9dc-2efeb9aecbcb",
           "type": "WatchVariableActionComponent",
           "left": 139,
-          "top": 713,
+          "top": 522,
           "width": 147,
           "height": 53,
           "customInputs": [],
