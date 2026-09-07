@@ -276,7 +276,7 @@ int32_t get_var_exhaust_fan_speed() {
 }
 
 void set_var_exhaust_fan_speed(int32_t value) {
-    can_out.CTRL_FAN.FAN_1_REQ = value;
+    can_out.CTRL_FAN.FAN_1_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
@@ -287,7 +287,7 @@ int32_t get_var_supply_fan_speed() {
 }
 
 void set_var_supply_fan_speed(int32_t value) {
-    can_out.CTRL_FAN.FAN_2_REQ = value;
+    can_out.CTRL_FAN.FAN_2_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
@@ -298,7 +298,7 @@ int32_t get_var_family_room_valve() {
 }
 
 void set_var_family_room_valve(int32_t value) {
-    can_out.CTRL_VALVE.VALVE_1_REQ = value;
+    can_out.CTRL_VALVE.VALVE_1_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
@@ -309,7 +309,7 @@ int32_t get_var_master_badroom_valve() {
 }
 
 void set_var_master_badroom_valve(int32_t value) {
-    can_out.CTRL_VALVE.VALVE_2_REQ = value;
+    can_out.CTRL_VALVE.VALVE_2_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
@@ -320,7 +320,7 @@ int32_t get_var_children_room_valve() {
 }
 
 void set_var_children_room_valve(int32_t value) {
-    can_out.CTRL_VALVE.VALVE_3_REQ = value;
+    can_out.CTRL_VALVE.VALVE_3_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
@@ -331,7 +331,7 @@ int32_t get_var_pantry_room_valve() {
 }
 
 void set_var_pantry_room_valve(int32_t value) {
-    can_out.CTRL_VALVE.VALVE_4_REQ = value;
+    can_out.CTRL_VALVE.VALVE_4_REQ = constrain(value, 0, 255);
     notifyChageValue();
 }
 
