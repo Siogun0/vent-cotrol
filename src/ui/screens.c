@@ -13,7 +13,7 @@
 objects_t objects;
 
 static const char *screen_names[] = { "Manual", "Main", "Settings", "Idle" };
-static const char *object_names[] = { "manual", "main", "settings", "idle", "status_bar", "status_bar__obj0", "status_bar__time", "status_bar__can", "status_bar__wi_fi", "status_bar__bluetooth", "status_bar__temperature", "status_bar__power_param", "background_image", "input_flow", "valve1", "obj0", "valve2", "obj1", "valve3", "obj2", "valve4", "obj3", "output_flow", "obj4", "obj5", "valve5", "valve6", "fans", "fans_common_speed", "obj6", "fans_common_speed_1", "obj7", "obj8", "obj9", "ssid_text", "obj10", "password_text", "obj11", "conect_wifi", "ip_address", "power_data_hiden", "keyboard", "brightnes_slider", "brightnes_idle_slider", "idle_timeout", "numboard", "idle_time", "idle_temperature" };
+static const char *object_names[] = { "manual", "main", "settings", "idle", "status_bar", "status_bar__obj0", "status_bar__time", "status_bar__can", "status_bar__wi_fi", "status_bar__bluetooth", "status_bar__temperature", "status_bar__power_param", "background_image", "input_flow", "valve1", "obj0", "valve2", "obj1", "valve3", "obj2", "valve4", "obj3", "output_flow", "obj4", "obj5", "valve5", "valve6", "fans", "fans_common_speed", "obj6", "fans_common_speed_1", "obj7", "obj8", "obj9", "ssid_text", "obj10", "password_text", "obj11", "conect_wifi", "ip_address", "power_data_hiden", "brightnes_slider", "brightnes_idle_slider", "idle_timeout", "reset_button", "keyboard", "numboard", "idle_time", "idle_temperature" };
 
 //
 // Event handlers
@@ -171,6 +171,13 @@ static void event_handler_cb_settings_ssid_text(lv_event_t *e) {
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
+    if (event == LV_EVENT_VALUE_CHANGED) {
+        lv_obj_t *ta = lv_event_get_target_obj(e);
+        if (tick_value_change_obj != ta) {
+            const char *value = lv_textarea_get_text(ta);
+            assignStringProperty(flowState, 2, 3, value, "Failed to assign Text in Textarea widget");
+        }
+    }
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
         flowPropagateValueLVGLEvent(flowState, 2, 0, e);
@@ -182,6 +189,13 @@ static void event_handler_cb_settings_password_text(lv_event_t *e) {
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
+    if (event == LV_EVENT_VALUE_CHANGED) {
+        lv_obj_t *ta = lv_event_get_target_obj(e);
+        if (tick_value_change_obj != ta) {
+            const char *value = lv_textarea_get_text(ta);
+            assignStringProperty(flowState, 4, 3, value, "Failed to assign Text in Textarea widget");
+        }
+    }
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
         flowPropagateValueLVGLEvent(flowState, 4, 0, e);
@@ -221,21 +235,6 @@ static void event_handler_cb_settings_power_data_hiden(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_settings_keyboard(lv_event_t *e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    void *flowState = lv_event_get_user_data(e);
-    (void)flowState;
-    
-    if (event == LV_EVENT_CANCEL) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 9, 0, e);
-    }
-    if (event == LV_EVENT_READY) {
-        e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 9, 1, e);
-    }
-}
-
 static void event_handler_cb_settings_brightnes_slider(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
@@ -245,7 +244,7 @@ static void event_handler_cb_settings_brightnes_slider(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 12, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 11, 3, value, "Failed to assign Value in Slider widget");
         }
     }
 }
@@ -259,7 +258,7 @@ static void event_handler_cb_settings_brightnes_idle_slider(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 13, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 12, 3, value, "Failed to assign Value in Slider widget");
         }
     }
 }
@@ -273,12 +272,38 @@ static void event_handler_cb_settings_idle_timeout(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target_obj(e);
         if (tick_value_change_obj != ta) {
             const char *value = lv_textarea_get_text(ta);
-            assignStringProperty(flowState, 15, 3, value, "Failed to assign Text in Textarea widget");
+            assignStringProperty(flowState, 14, 3, value, "Failed to assign Text in Textarea widget");
         }
     }
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 15, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 14, 0, e);
+    }
+}
+
+static void event_handler_cb_settings_reset_button(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_LONG_PRESSED) {
+        e->user_data = (void *)0;
+        action_reset_request(e);
+    }
+}
+
+static void event_handler_cb_settings_keyboard(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_CANCEL) {
+        e->user_data = (void *)0;
+        flowPropagateValueLVGLEvent(flowState, 17, 0, e);
+    }
+    if (event == LV_EVENT_READY) {
+        e->user_data = (void *)0;
+        flowPropagateValueLVGLEvent(flowState, 17, 1, e);
     }
 }
 
@@ -289,11 +314,11 @@ static void event_handler_cb_settings_numboard(lv_event_t *e) {
     
     if (event == LV_EVENT_CANCEL) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 16, 0, e);
+        flowPropagateValueLVGLEvent(flowState, 18, 0, e);
     }
     if (event == LV_EVENT_READY) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 16, 1, e);
+        flowPropagateValueLVGLEvent(flowState, 18, 1, e);
     }
 }
 
@@ -738,17 +763,19 @@ void create_screen_settings() {
             // SSID_text
             lv_obj_t *obj = lv_textarea_create(parent_obj);
             objects.ssid_text = obj;
-            lv_obj_set_pos(obj, 102, 40);
-            lv_obj_set_size(obj, 160, 40);
+            lv_obj_set_pos(obj, 102, 36);
+            lv_obj_set_size(obj, 160, 48);
             lv_textarea_set_max_length(obj, 128);
             lv_textarea_set_one_line(obj, true);
             lv_textarea_set_password_mode(obj, false);
             lv_obj_add_event_cb(obj, event_handler_cb_settings_ssid_text, LV_EVENT_ALL, flowState);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
+            lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj10 = obj;
-            lv_obj_set_pos(obj, 15, 90);
+            lv_obj_set_pos(obj, 15, 96);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_label_white(obj);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -758,12 +785,14 @@ void create_screen_settings() {
             // Password_text
             lv_obj_t *obj = lv_textarea_create(parent_obj);
             objects.password_text = obj;
-            lv_obj_set_pos(obj, 102, 82);
-            lv_obj_set_size(obj, 160, 40);
+            lv_obj_set_pos(obj, 102, 84);
+            lv_obj_set_size(obj, 160, 48);
             lv_textarea_set_max_length(obj, 128);
             lv_textarea_set_one_line(obj, true);
-            lv_textarea_set_password_mode(obj, false);
+            lv_textarea_set_password_mode(obj, true);
             lv_obj_add_event_cb(obj, event_handler_cb_settings_password_text, LV_EVENT_ALL, flowState);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
+            lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             lv_obj_t *obj = lv_button_create(parent_obj);
@@ -780,6 +809,7 @@ void create_screen_settings() {
                     lv_obj_set_pos(obj, 0, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_add_event_cb(obj, event_handler_cb_settings_conect_wifi, LV_EVENT_ALL, flowState);
+                    add_style_label_white(obj);
                     lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "Connect");
                 }
@@ -806,16 +836,6 @@ void create_screen_settings() {
             lv_checkbox_set_text_static(obj, "Power data in status bar");
             lv_obj_add_event_cb(obj, event_handler_cb_settings_power_data_hiden, LV_EVENT_ALL, flowState);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
-        {
-            // Keyboard
-            lv_obj_t *obj = lv_keyboard_create(parent_obj);
-            objects.keyboard = obj;
-            lv_obj_set_pos(obj, -2, 318);
-            lv_obj_set_size(obj, 482, 162);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_keyboard, LV_EVENT_ALL, flowState);
-            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_style_align(obj, LV_ALIGN_DEFAULT, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
@@ -858,18 +878,49 @@ void create_screen_settings() {
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             add_style_label_white(obj);
             lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text_static(obj, "Время бездействия");
+            lv_label_set_text_static(obj, "Время бездействия, с");
         }
         {
             // idle_timeout
             lv_obj_t *obj = lv_textarea_create(parent_obj);
             objects.idle_timeout = obj;
-            lv_obj_set_pos(obj, 203, 233);
-            lv_obj_set_size(obj, 150, 40);
+            lv_obj_set_pos(obj, 211, 229);
+            lv_obj_set_size(obj, 150, 48);
             lv_textarea_set_max_length(obj, 128);
-            lv_textarea_set_one_line(obj, false);
+            lv_textarea_set_one_line(obj, true);
             lv_textarea_set_password_mode(obj, false);
             lv_obj_add_event_cb(obj, event_handler_cb_settings_idle_timeout, LV_EVENT_ALL, flowState);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
+            lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
+        {
+            // Reset_button
+            lv_obj_t *obj = lv_button_create(parent_obj);
+            objects.reset_button = obj;
+            lv_obj_set_pos(obj, 323, 410);
+            lv_obj_set_size(obj, 100, 50);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_reset_button, LV_EVENT_ALL, flowState);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    add_style_label_white(obj);
+                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text_static(obj, "Reset");
+                }
+            }
+        }
+        {
+            // Keyboard
+            lv_obj_t *obj = lv_keyboard_create(parent_obj);
+            objects.keyboard = obj;
+            lv_obj_set_pos(obj, -2, 318);
+            lv_obj_set_size(obj, 482, 162);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_keyboard, LV_EVENT_ALL, flowState);
+            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_style_align(obj, LV_ALIGN_DEFAULT, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         {
             // Numboard
@@ -893,7 +944,27 @@ void tick_screen_settings() {
     void *flowState = getFlowState(0, 2);
     (void)flowState;
     {
-        int32_t new_val = evalIntegerProperty(flowState, 12, 3, "Failed to evaluate Value in Slider widget");
+        const char *new_val = evalTextProperty(flowState, 2, 3, "Failed to evaluate Text in Textarea widget");
+        const char *cur_val = lv_textarea_get_text(objects.ssid_text);
+        uint32_t max_length = lv_textarea_get_max_length(objects.ssid_text);
+        if (strncmp(new_val, cur_val, max_length) != 0) {
+            tick_value_change_obj = objects.ssid_text;
+            lv_textarea_set_text(objects.ssid_text, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        const char *new_val = evalTextProperty(flowState, 4, 3, "Failed to evaluate Text in Textarea widget");
+        const char *cur_val = lv_textarea_get_text(objects.password_text);
+        uint32_t max_length = lv_textarea_get_max_length(objects.password_text);
+        if (strncmp(new_val, cur_val, max_length) != 0) {
+            tick_value_change_obj = objects.password_text;
+            lv_textarea_set_text(objects.password_text, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = evalIntegerProperty(flowState, 11, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.brightnes_slider);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.brightnes_slider;
@@ -902,7 +973,7 @@ void tick_screen_settings() {
         }
     }
     {
-        int32_t new_val = evalIntegerProperty(flowState, 13, 3, "Failed to evaluate Value in Slider widget");
+        int32_t new_val = evalIntegerProperty(flowState, 12, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.brightnes_idle_slider);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.brightnes_idle_slider;
@@ -911,7 +982,7 @@ void tick_screen_settings() {
         }
     }
     {
-        const char *new_val = evalTextProperty(flowState, 15, 3, "Failed to evaluate Text in Textarea widget");
+        const char *new_val = evalTextProperty(flowState, 14, 3, "Failed to evaluate Text in Textarea widget");
         const char *cur_val = lv_textarea_get_text(objects.idle_timeout);
         uint32_t max_length = lv_textarea_get_max_length(objects.idle_timeout);
         if (strncmp(new_val, cur_val, max_length) != 0) {

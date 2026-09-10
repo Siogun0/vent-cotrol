@@ -4,6 +4,7 @@
 #include <AsyncUDP.h>
 #include <AsyncTCP.h>
 #include <Wire.h>
+#include <esp_wifi.h>
 #include <Preferences.h>
 #include <time.h>
 #include <TAMC_GT911.h>
@@ -53,6 +54,9 @@ XcpBridge* xcpBridge_vent;
 XcpBridge* xcpBridge_vent1;
 Preferences prefs;
 
+char wifi_ssid[32] = { 0 };
+char wifi_password[64] = { 0 };
+
 void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
@@ -83,7 +87,14 @@ void setup() {
   lv_obj_set_parent(objects.background_image, lv_layer_bottom()); 
   screen_timer_init();
 
+  // Wi-Fi
+  WiFi.mode(WIFI_STA); 
+  wifi_config_t conf;
+  esp_err_t res = esp_wifi_get_config(WIFI_IF_STA, &conf);
+  strncpy(wifi_ssid, (char*)conf.sta.ssid, sizeof(wifi_ssid) / sizeof(char));
+  strncpy(wifi_password, (char*)conf.sta.password, sizeof(wifi_password) / sizeof(char));
   WiFi.begin();
+
   configTzTime(timeZone, ntpServer);
 
   tempSensorInit();
@@ -140,7 +151,11 @@ void action_connect_wifi(lv_event_t *e) {
   while (WiFi.status() == WL_CONNECTED) {
     delay(100);
   }
-  WiFi.begin(lv_textarea_get_text(objects.ssid_text), lv_textarea_get_text(objects.password_text));
+  WiFi.begin(wifi_ssid, wifi_password);
+}
+
+void action_reset_request(lv_event_t *e) {
+    esp_restart();
 }
 
 // === Обновление глобальных переменных статуса ===
@@ -416,6 +431,24 @@ bool get_var_idle_is_active() {
 void set_var_idle_is_active(bool value) {
     // idle_is_active = value;
     Serial.println("Idle is active");
+}
+
+const char *get_var_wifi_ssid() {
+    return wifi_ssid;
+}
+
+void set_var_wifi_ssid(const char *value) {
+    strncpy(wifi_ssid, value, sizeof(wifi_ssid) / sizeof(char));
+    wifi_ssid[sizeof(wifi_ssid) / sizeof(char) - 1] = 0;
+}
+
+const char *get_var_wifi_password() {
+    return wifi_password;
+}
+
+void set_var_wifi_password(const char *value) {
+    strncpy(wifi_password, value, sizeof(wifi_password) / sizeof(char));
+    wifi_password[sizeof(wifi_password) / sizeof(char) - 1] = 0;
 }
 
 // === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===

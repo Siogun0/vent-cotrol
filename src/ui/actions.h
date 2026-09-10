@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 extern void action_connect_wifi(lv_event_t * e);
+extern void action_reset_request(lv_event_t * e);
 
 #ifdef __cplusplus
 }

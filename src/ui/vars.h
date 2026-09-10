@@ -68,6 +68,10 @@ extern int32_t get_var_idle_timeout();
 extern void set_var_idle_timeout(int32_t value);
 extern bool get_var_idle_is_active();
 extern void set_var_idle_is_active(bool value);
+extern const char *get_var_wifi_ssid();
+extern void set_var_wifi_ssid(const char *value);
+extern const char *get_var_wifi_password();
+extern void set_var_wifi_password(const char *value);
 
 #ifdef __cplusplus
 }

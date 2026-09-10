@@ -60,10 +60,11 @@ typedef struct _objects_t {
     lv_obj_t *conect_wifi;
     lv_obj_t *ip_address;
     lv_obj_t *power_data_hiden;
-    lv_obj_t *keyboard;
     lv_obj_t *brightnes_slider;
     lv_obj_t *brightnes_idle_slider;
     lv_obj_t *idle_timeout;
+    lv_obj_t *reset_button;
+    lv_obj_t *keyboard;
     lv_obj_t *numboard;
     lv_obj_t *idle_time;
     lv_obj_t *idle_temperature;
