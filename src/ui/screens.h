@@ -66,6 +66,10 @@ typedef struct _objects_t {
     lv_obj_t *reset_button;
     lv_obj_t *keyboard;
     lv_obj_t *numboard;
+    lv_obj_t *modal_reset_overlay;
+    lv_obj_t *obj12;
+    lv_obj_t *obj13;
+    lv_obj_t *obj14;
     lv_obj_t *idle_time;
     lv_obj_t *idle_temperature;
 } objects_t;
