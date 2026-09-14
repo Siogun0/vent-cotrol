@@ -11,18 +11,20 @@ extern "C" {
 
 enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
-    SCREEN_ID_MANUAL = 1,
-    SCREEN_ID_MAIN = 2,
+    SCREEN_ID_MAIN = 1,
+    SCREEN_ID_MANUAL = 2,
     SCREEN_ID_SETTINGS = 3,
     SCREEN_ID_IDLE = 4,
-    _SCREEN_ID_LAST = 4
+    SCREEN_ID_SCENARIOS = 5,
+    _SCREEN_ID_LAST = 5
 };
 
 typedef struct _objects_t {
-    lv_obj_t *manual;
     lv_obj_t *main;
+    lv_obj_t *manual;
     lv_obj_t *settings;
     lv_obj_t *idle;
+    lv_obj_t *scenarios;
     lv_obj_t *status_bar;
     lv_obj_t *status_bar__obj0;
     lv_obj_t *status_bar__time;
@@ -31,26 +33,26 @@ typedef struct _objects_t {
     lv_obj_t *status_bar__bluetooth;
     lv_obj_t *status_bar__temperature;
     lv_obj_t *status_bar__power_param;
+    lv_obj_t *obj0;
     lv_obj_t *background_image;
     lv_obj_t *input_flow;
     lv_obj_t *valve1;
-    lv_obj_t *obj0;
-    lv_obj_t *valve2;
     lv_obj_t *obj1;
-    lv_obj_t *valve3;
+    lv_obj_t *valve2;
     lv_obj_t *obj2;
-    lv_obj_t *valve4;
+    lv_obj_t *valve3;
     lv_obj_t *obj3;
-    lv_obj_t *output_flow;
+    lv_obj_t *valve4;
     lv_obj_t *obj4;
+    lv_obj_t *output_flow;
     lv_obj_t *obj5;
+    lv_obj_t *obj6;
     lv_obj_t *valve5;
     lv_obj_t *valve6;
     lv_obj_t *fans;
     lv_obj_t *fans_common_speed;
-    lv_obj_t *obj6;
-    lv_obj_t *fans_common_speed_1;
     lv_obj_t *obj7;
+    lv_obj_t *fans_common_speed_1;
     lv_obj_t *obj8;
     lv_obj_t *obj9;
     lv_obj_t *ssid_text;
@@ -70,23 +72,46 @@ typedef struct _objects_t {
     lv_obj_t *obj12;
     lv_obj_t *obj13;
     lv_obj_t *obj14;
+    lv_obj_t *obj15;
     lv_obj_t *idle_time;
     lv_obj_t *idle_temperature;
+    lv_obj_t *obj16;
+    lv_obj_t *scenario_button_1;
+    lv_obj_t *scenario_1;
+    lv_obj_t *obj17;
+    lv_obj_t *obj18;
+    lv_obj_t *obj19;
+    lv_obj_t *obj20;
+    lv_obj_t *obj21;
+    lv_obj_t *obj22;
+    lv_obj_t *obj23;
+    lv_obj_t *obj24;
+    lv_obj_t *obj25;
+    lv_obj_t *obj26;
+    lv_obj_t *obj27;
+    lv_obj_t *obj28;
+    lv_obj_t *obj29;
+    lv_obj_t *obj30;
+    lv_obj_t *obj31;
+    lv_obj_t *obj32;
 } objects_t;
 
 extern objects_t objects;
 
-void create_screen_manual();
-void tick_screen_manual();
-
 void create_screen_main();
 void tick_screen_main();
+
+void create_screen_manual();
+void tick_screen_manual();
 
 void create_screen_settings();
 void tick_screen_settings();
 
 void create_screen_idle();
 void tick_screen_idle();
+
+void create_screen_scenarios();
+void tick_screen_scenarios();
 
 void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_status_bar(void *flowState, int startWidgetIndex);

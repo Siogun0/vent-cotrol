@@ -21,8 +21,8 @@ extern "C" {
 #include "esp_timer.h"
 #include "xcp_bridge.h"
 
-#define DS18B20_USED
-// #define DHT22_USED
+//#define DS18B20_USED
+ #define DHT22_USED
 
 #ifdef DS18B20_USED
 #include "ds18b20.h"
