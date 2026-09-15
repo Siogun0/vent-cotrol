@@ -451,6 +451,21 @@ void set_var_wifi_password(const char *value) {
     wifi_password[sizeof(wifi_password) / sizeof(char) - 1] = 0;
 }
 
+int32_t scenario_id_active;
+
+int32_t get_var_scenario_id_active() {
+    return scenario_id_active;
+}
+
+void set_var_scenario_id_active(int32_t value) {
+  if (scenario_id_active != value)
+  {
+    //Apply
+  }
+
+  scenario_id_active = value;
+}
+
 // === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===
 uint32_t lastChangingValue = 0;
 

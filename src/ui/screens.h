@@ -72,12 +72,12 @@ typedef struct _objects_t {
     lv_obj_t *obj12;
     lv_obj_t *obj13;
     lv_obj_t *obj14;
-    lv_obj_t *obj15;
     lv_obj_t *idle_time;
     lv_obj_t *idle_temperature;
-    lv_obj_t *obj16;
+    lv_obj_t *obj15;
     lv_obj_t *scenario_button_1;
     lv_obj_t *scenario_1;
+    lv_obj_t *obj16;
     lv_obj_t *obj17;
     lv_obj_t *obj18;
     lv_obj_t *obj19;
@@ -93,7 +93,6 @@ typedef struct _objects_t {
     lv_obj_t *obj29;
     lv_obj_t *obj30;
     lv_obj_t *obj31;
-    lv_obj_t *obj32;
 } objects_t;
 
 extern objects_t objects;

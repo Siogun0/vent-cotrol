@@ -26,8 +26,7 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0,
     FLOW_GLOBAL_VARIABLE_SCREENS_ARRAY = 1,
     FLOW_GLOBAL_VARIABLE_SCREEN_INDEX = 2,
-    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3,
-    FLOW_GLOBAL_VARIABLE_SCENARIO_ID_ACTIVE = 4
+    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3
 };
 
 // Native global variables
@@ -74,6 +73,8 @@ extern const char *get_var_wifi_ssid();
 extern void set_var_wifi_ssid(const char *value);
 extern const char *get_var_wifi_password();
 extern void set_var_wifi_password(const char *value);
+extern int32_t get_var_scenario_id_active();
+extern void set_var_scenario_id_active(int32_t value);
 
 #ifdef __cplusplus
 }
