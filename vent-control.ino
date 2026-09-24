@@ -3,10 +3,14 @@
 #include <WiFi.h>
 #include <AsyncUDP.h>
 #include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <Wire.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
 #include <time.h>
+#include <FS.h>
+#include <LittleFS.h>
+#include <ArduinoJson.h>
 #include <TAMC_GT911.h>
 extern "C" {
 #include "can_platform.h"
@@ -20,6 +24,9 @@ extern "C" {
 
 #include "esp_timer.h"
 #include "xcp_bridge.h"
+#include "scenarios.h"
+
+#define FORMAT_LITTLEFS_IF_FAILED true
 
 //#define DS18B20_USED
  #define DHT22_USED
@@ -48,6 +55,13 @@ status_color can_status = status_color_GREY;
 status_color wifi_status = status_color_GREY;
 status_color bt_status = status_color_GREY;
 
+int32_t brightness = 255;
+int32_t brightness_idle = 128;
+int32_t idle_timeout = 5;
+bool idle_is_active = false;
+
+int32_t scenario_id_active;
+
 int status_bar_update_req = 0;
 
 XcpBridge* xcpBridge_vent;
@@ -56,6 +70,65 @@ Preferences prefs;
 
 char wifi_ssid[32] = { 0 };
 char wifi_password[64] = { 0 };
+
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
+AsyncEventSource events("/events"); // event source (Server-Sent events)
+
+
+String generateTuyaJson() {
+    // Выделяем память под JSON-документ (StaticJsonDocument для ArduinoJson v6, JsonDocument для v7)
+    // 1024 байт с запасом хватит для данной структуры
+    StaticJsonDocument<1024> doc; 
+
+    // Заполняем корень документа
+    doc["time"] = String(time_str);
+
+    // Вложенный объект "sensors"
+    JsonObject jsonSensors = doc.createNestedObject("sensors");
+    jsonSensors["temp"] = temperatureSelf;
+    jsonSensors["humidity"] = humiditySelf;
+    jsonSensors["voltage"] = can_in.POWER_STATUS.V_12V;
+    jsonSensors["current"] = can_in.POWER_STATUS.I_12V;
+    jsonSensors["power"] = can_in.POWER_STATUS.P_12V;
+
+    // Вложенный массив устройств "devices"
+    JsonArray jsonDevices = doc.createNestedArray("devices");
+
+    // Устройство 1: Вентиляторы (dev_fan_01)
+    JsonObject dev1 = jsonDevices.createNestedObject();
+    dev1["devId"] = "dev_fan_01";
+    JsonObject dps1 = dev1.createNestedObject("dps");
+    dps1["1"] = can_out.CTRL_FAN.FAN_1_REQ;
+    dps1["2"] = can_out.CTRL_FAN.FAN_2_REQ;
+
+    // Устройство 2: Приточные клапана (dev_valves_zone1)
+    JsonObject dev2 = jsonDevices.createNestedObject();
+    dev2["devId"] = "dev_valves_zone1";
+    JsonObject dps2 = dev2.createNestedObject("dps");
+    dps2["101"] = can_out.CTRL_VALVE.VALVE_1_REQ;
+    dps2["102"] = can_out.CTRL_VALVE.VALVE_2_REQ;
+    dps2["103"] = can_out.CTRL_VALVE.VALVE_3_REQ;
+    dps2["104"] = can_out.CTRL_VALVE.VALVE_4_REQ;
+
+    // Устройство 3: Вытяжные клапана (dev_valves_zone2)
+    JsonObject dev3 = jsonDevices.createNestedObject();
+    dev3["devId"] = "dev_valves_zone2";
+    JsonObject dps3 = dev3.createNestedObject("dps");
+    dps3["201"] = can_out.CTRL_VALVE.VALVE_5_REQ;
+    dps3["202"] = can_out.CTRL_VALVE.VALVE_6_REQ;
+
+    // Сериализуем данные в C++ строку String
+    String output;
+    
+    // Если вам нужен красивый форматированный вывод с отступами (как в вашем примере):
+    serializeJsonPretty(doc, output);
+    
+    // Если нужна компактная строка без пробелов для быстрой передачи по сети:
+    // serializeJson(doc, output);
+
+    return output;
+}
 
 void setup() {
   Serial.begin(115200);
@@ -102,6 +175,28 @@ void setup() {
   // TCP for XCP
   xcpBridge_vent = new XcpBridge(XCP_UDP_TCP, 18001, 20001, 0x7AE, 0x7AF);
   platform_can_init_rx_mb(0, MBN_NEXT_FREE_BUS_0, 0x7AF, 8);
+
+  // Инициализация файловой системы
+  if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
+    Serial.println("Ошибка монтирования LittleFS!");
+  }
+  unsigned int totalBytes = LittleFS.totalBytes();
+  unsigned int usedBytes = LittleFS.usedBytes();
+  Serial.printf("Всего места: %d байт (~%.2f МБ)\n", totalBytes, (float)totalBytes / 1024 / 1024);
+  Serial.printf("Использовано: %d байт, (%.2f %%)\n", usedBytes, (float)(usedBytes * 100) / (float)totalBytes);
+
+  // Сервер HTTP
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+  // respond to GET requests on URL /heap
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+  });
+  server.on("/api/tuya/status", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "application/json", generateTuyaJson());
+  });
+
+  server.begin();
+  Serial.println("WEB сервер запущен");
 
   Serial.println("🎉 Система успешно запущена!");
 }
@@ -284,25 +379,33 @@ void set_var_temperature_str(const char *value) {
     temperature_str[sizeof(temperature_str) / sizeof(char) - 1] = 0;
 }
 
-// int32_t exhaust_fan_speed;
-
-int32_t get_var_exhaust_fan_speed() {
-    return can_out.CTRL_FAN.FAN_1_REQ;
-}
-
-void set_var_exhaust_fan_speed(int32_t value) {
-    can_out.CTRL_FAN.FAN_1_REQ = constrain(value, 0, 255);
-    notifyChageValue();
-}
-
 // int32_t supply_fan_speed;
 
 int32_t get_var_supply_fan_speed() {
-    return can_out.CTRL_FAN.FAN_2_REQ;
+    return can_out.CTRL_FAN.FAN_1_REQ;
 }
 
 void set_var_supply_fan_speed(int32_t value) {
+    can_out.CTRL_FAN.FAN_1_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].supply_fan_speed = can_out.CTRL_FAN.FAN_1_REQ;
+    }
+    notifyChageValue();
+}
+
+// int32_t exhaust_fan_speed;
+
+int32_t get_var_exhaust_fan_speed() {
+    return can_out.CTRL_FAN.FAN_2_REQ;
+}
+
+void set_var_exhaust_fan_speed(int32_t value) {
     can_out.CTRL_FAN.FAN_2_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].exhaust_fan_speed = can_out.CTRL_FAN.FAN_2_REQ;
+    }
     notifyChageValue();
 }
 
@@ -314,6 +417,10 @@ int32_t get_var_family_room_valve() {
 
 void set_var_family_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_1_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].family_room_valve = can_out.CTRL_VALVE.VALVE_1_REQ;
+    }
     notifyChageValue();
 }
 
@@ -325,6 +432,10 @@ int32_t get_var_master_badroom_valve() {
 
 void set_var_master_badroom_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_2_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].master_badroom_valve = can_out.CTRL_VALVE.VALVE_2_REQ;
+    }
     notifyChageValue();
 }
 
@@ -336,6 +447,10 @@ int32_t get_var_children_room_valve() {
 
 void set_var_children_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_3_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].children_room_valve = can_out.CTRL_VALVE.VALVE_3_REQ;
+    }
     notifyChageValue();
 }
 
@@ -347,6 +462,10 @@ int32_t get_var_pantry_room_valve() {
 
 void set_var_pantry_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_4_REQ = constrain(value, 0, 255);
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].pantry_room_valve = can_out.CTRL_VALVE.VALVE_4_REQ;
+    }
     notifyChageValue();
 }
 
@@ -358,6 +477,10 @@ int32_t get_var_toilet_exhaust_valve() {
 
 void set_var_toilet_exhaust_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_5_REQ = value ? 100 : 0;
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].toilet_exhaust_valve = can_out.CTRL_VALVE.VALVE_5_REQ;
+    }
     notifyChageValue();
 }
 
@@ -369,10 +492,12 @@ int32_t get_var_bathroom_exhaust_valve() {
 
 void set_var_bathroom_exhaust_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_6_REQ = value ? 100 : 0;
+    if (scenario_id_active == MANUAL_CONTROL)
+    {
+      scenarios[scenario_id_active].bathroom_exhaust_valve = can_out.CTRL_VALVE.VALVE_6_REQ;
+    }
     notifyChageValue();
 }
-
-int32_t brightness = 255;
 
 int32_t get_var_brightness() {
     return brightness;
@@ -384,8 +509,6 @@ void set_var_brightness(int32_t value) {
     notifyChageValue();
 }
 
-int32_t brightness_idle = 128;
-
 int32_t get_var_brightness_idle() {
     return brightness_idle;
 }
@@ -395,8 +518,6 @@ void set_var_brightness_idle(int32_t value) {
     notifyChageValue();
 }
 
-int32_t idle_timeout = 5;
-
 int32_t get_var_idle_timeout() {
     return idle_timeout;
 }
@@ -405,8 +526,6 @@ void set_var_idle_timeout(int32_t value) {
     idle_timeout = value;
     notifyChageValue();
 }
-
-bool idle_is_active = false;
 
 bool get_var_idle_is_active() {
   if (lv_display_get_inactive_time(NULL) > idle_timeout * 1000)
@@ -451,19 +570,25 @@ void set_var_wifi_password(const char *value) {
     wifi_password[sizeof(wifi_password) / sizeof(char) - 1] = 0;
 }
 
-int32_t scenario_id_active;
-
 int32_t get_var_scenario_id_active() {
     return scenario_id_active;
 }
 
 void set_var_scenario_id_active(int32_t value) {
-  if (scenario_id_active != value)
+  if (scenario_id_active != value && scenario_id_active >= 0 && scenario_id_active < scenarios_number)
   {
-    //Apply
-  }
+    scenario_id_active = value;
+    can_out.CTRL_VALVE.VALVE_1_REQ = scenarios[scenario_id_active].family_room_valve;
+    can_out.CTRL_VALVE.VALVE_2_REQ = scenarios[scenario_id_active].master_badroom_valve;
+    can_out.CTRL_VALVE.VALVE_3_REQ = scenarios[scenario_id_active].children_room_valve;
+    can_out.CTRL_VALVE.VALVE_4_REQ = scenarios[scenario_id_active].pantry_room_valve;
+    can_out.CTRL_VALVE.VALVE_5_REQ = scenarios[scenario_id_active].toilet_exhaust_valve;
+    can_out.CTRL_VALVE.VALVE_6_REQ = scenarios[scenario_id_active].bathroom_exhaust_valve;
+    can_out.CTRL_FAN.FAN_1_REQ     = scenarios[scenario_id_active].supply_fan_speed;
+    can_out.CTRL_FAN.FAN_2_REQ     = scenarios[scenario_id_active].exhaust_fan_speed;
 
-  scenario_id_active = value;
+    notifyChageValue();
+  }
 }
 
 // === СОХРАНЕНИЕ И ЗАГРУЗКА СОСТОЯНИЯ ===
@@ -480,6 +605,17 @@ void loadLastState(void)
   can_out.CTRL_VALVE.VALVE_6_REQ = prefs.getUChar("valve_6", 100);
   can_out.CTRL_FAN.FAN_1_REQ     = prefs.getUChar("fan_1", 50);
   can_out.CTRL_FAN.FAN_2_REQ     = prefs.getUChar("fan_2", 50);
+
+  scenario_id_active             = prefs.getInt("scenario_id", 1);
+
+  scenarios[MANUAL_CONTROL].family_room_valve       = prefs.getUChar("valve_1_mn", scenarios[MANUAL_CONTROL].family_room_valve);
+  scenarios[MANUAL_CONTROL].master_badroom_valve    = prefs.getUChar("valve_2_mn", scenarios[MANUAL_CONTROL].master_badroom_valve);
+  scenarios[MANUAL_CONTROL].children_room_valve     = prefs.getUChar("valve_3_mn", scenarios[MANUAL_CONTROL].children_room_valve);
+  scenarios[MANUAL_CONTROL].pantry_room_valve       = prefs.getUChar("valve_4_mn", scenarios[MANUAL_CONTROL].pantry_room_valve);
+  scenarios[MANUAL_CONTROL].toilet_exhaust_valve    = prefs.getUChar("valve_5_mn", scenarios[MANUAL_CONTROL].toilet_exhaust_valve);
+  scenarios[MANUAL_CONTROL].bathroom_exhaust_valve  = prefs.getUChar("valve_6_mn", scenarios[MANUAL_CONTROL].bathroom_exhaust_valve);
+  scenarios[MANUAL_CONTROL].supply_fan_speed        = prefs.getUChar("fan_1_mn", scenarios[MANUAL_CONTROL].supply_fan_speed);
+  scenarios[MANUAL_CONTROL].exhaust_fan_speed       = prefs.getUChar("fan_2_mn", scenarios[MANUAL_CONTROL].exhaust_fan_speed);
 
   prefs.begin("settings");
   brightness = prefs.getUChar("brightness", 255);
@@ -501,6 +637,17 @@ void saveCurrentStatePoll(void)
     prefs.putUChar("valve_6", can_out.CTRL_VALVE.VALVE_6_REQ);
     prefs.putUChar("fan_1", can_out.CTRL_FAN.FAN_1_REQ);
     prefs.putUChar("fan_2", can_out.CTRL_FAN.FAN_2_REQ);
+
+    prefs.putInt("scenario_id", scenario_id_active);
+
+    prefs.putUChar("valve_1_mn", scenarios[MANUAL_CONTROL].family_room_valve);
+    prefs.putUChar("valve_2_mn", scenarios[MANUAL_CONTROL].master_badroom_valve);
+    prefs.putUChar("valve_3_mn", scenarios[MANUAL_CONTROL].children_room_valve);
+    prefs.putUChar("valve_4_mn", scenarios[MANUAL_CONTROL].pantry_room_valve);
+    prefs.putUChar("valve_5_mn", scenarios[MANUAL_CONTROL].toilet_exhaust_valve);
+    prefs.putUChar("valve_6_mn", scenarios[MANUAL_CONTROL].bathroom_exhaust_valve);
+    prefs.putUChar("fan_1_mn",   scenarios[MANUAL_CONTROL].supply_fan_speed);
+    prefs.putUChar("fan_2_mn",   scenarios[MANUAL_CONTROL].exhaust_fan_speed);      
 
     prefs.putUChar("brightness", brightness);
     prefs.putUChar("brightness_idle", brightness_idle);

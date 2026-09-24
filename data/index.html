@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление вентиляцией умного дома</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- Верхняя информационная панель -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span id="val-temp">-12.5°C</span>
+                <span id="val-humidity">68%</span>
+            </div>
+            <div class="status-left">
+                <span id="val-voltage">12.5V</span>
+                <span id="val-current">0.25A</span>
+                <span id="val-power">2.0W</span>
+            </div>
+            <div class="status-right">
+                <span id="net-bt" class="active">BT</span>
+                <span id="net-wifi" class="active">Wi-Fi</span>
+                <span id="net-can" class="active">CAN</span>
+                <span id="val-time" class="time">23:57</span>
+            </div>
+        </div>
+
+        <!-- Секция: Вентиляторы -->
+        <div class="section-card">
+            <div class="section-title">Вентиляторы</div>
+
+            <div class="control-row">
+                <div class="label">Приток</div>
+                <div class="slider-container">
+                    <input type="range" id="fan_in" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="label">Вытяжка</div>
+                <div class="slider-container">
+                    <input type="range" id="fan_out" min="0" max="100" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция: Приточные клапана -->
+        <div class="section-card">
+            <div class="section-title">Приточные клапана</div>
+
+            <div class="control-row">
+                <div class="label">Гостиная</div>
+                <div class="slider-container">
+                    <input type="range" id="valve_living" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="label">Спальня</div>
+                <div class="slider-container">
+                    <input type="range" id="valve_bedroom" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="label">Детская</div>
+                <div class="slider-container">
+                    <input type="range" id="valve_kids" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="label">Кладовка</div>
+                <div class="slider-container">
+                    <input type="range" id="valve_store" min="0" max="100" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Секция: Вытяжные клапана -->
+        <div class="section-card">
+            <div class="section-title">Вытяжные клапана</div>
+
+            <div class="exhaust-grid">
+                <div class="control-row">
+                    <div class="label">Туалет</div>
+                    <div class="slider-container">
+                        <input type="range" id="valve_toilet" min="0" max="100" value="0">
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="label">Ванная</div>
+                    <div class="slider-container">
+                        <input type="range" id="valve_bathroom" min="0" max="100" value="95">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
