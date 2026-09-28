@@ -10,6 +10,7 @@
 #include <time.h>
 #include <FS.h>
 #include <LittleFS.h>
+#include <AsyncJson.h>
 #include <ArduinoJson.h>
 #include <TAMC_GT911.h>
 extern "C" {
@@ -99,24 +100,24 @@ String generateTuyaJson() {
     JsonObject dev1 = jsonDevices.createNestedObject();
     dev1["devId"] = "dev_fan_01";
     JsonObject dps1 = dev1.createNestedObject("dps");
-    dps1["1"] = can_out.CTRL_FAN.FAN_1_REQ;
-    dps1["2"] = can_out.CTRL_FAN.FAN_2_REQ;
+    dps1["1"] = get_var_supply_fan_speed();
+    dps1["2"] = get_var_exhaust_fan_speed();
 
     // Устройство 2: Приточные клапана (dev_valves_zone1)
     JsonObject dev2 = jsonDevices.createNestedObject();
     dev2["devId"] = "dev_valves_zone1";
     JsonObject dps2 = dev2.createNestedObject("dps");
-    dps2["101"] = can_out.CTRL_VALVE.VALVE_1_REQ;
-    dps2["102"] = can_out.CTRL_VALVE.VALVE_2_REQ;
-    dps2["103"] = can_out.CTRL_VALVE.VALVE_3_REQ;
-    dps2["104"] = can_out.CTRL_VALVE.VALVE_4_REQ;
+    dps2["101"] = get_var_family_room_valve();
+    dps2["102"] = get_var_master_badroom_valve();
+    dps2["103"] = get_var_children_room_valve();
+    dps2["104"] = get_var_pantry_room_valve();
 
     // Устройство 3: Вытяжные клапана (dev_valves_zone2)
     JsonObject dev3 = jsonDevices.createNestedObject();
     dev3["devId"] = "dev_valves_zone2";
     JsonObject dps3 = dev3.createNestedObject("dps");
-    dps3["201"] = can_out.CTRL_VALVE.VALVE_5_REQ;
-    dps3["202"] = can_out.CTRL_VALVE.VALVE_6_REQ;
+    dps3["201"] = get_var_toilet_exhaust_valve();
+    dps3["202"] = get_var_bathroom_exhaust_valve();
 
     // Сериализуем данные в C++ строку String
     String output;
@@ -128,6 +129,90 @@ String generateTuyaJson() {
     // serializeJson(doc, output);
 
     return output;
+}
+
+bool parseTuyaCommand(const String& jsonInput) {
+    // Выделяем память под входящий JSON (512 байт для одной команды более чем достаточно)
+    StaticJsonDocument<512> doc;
+
+    // Десериализуем (парсим) строку
+    DeserializationError error = deserializeJson(doc, jsonInput);
+
+    // Если JSON некорректен, выходим с ошибкой
+    if (error) {
+        Serial.print(F("Ошибка парсинга JSON: "));
+        Serial.println(error.f_str());
+        return false;
+    }
+
+    // Проверяем наличие обязательных полей
+    if (!doc.containsKey("devId") || !doc.containsKey("dps")) {
+        Serial.println(F("Ошибка: В JSON отсутствуют поля devId или dps"));
+        return false;
+    }
+
+    const char* devId = doc["devId"];
+    JsonObject dps = doc["dps"];
+
+    // Флаг, определяющий, нашли ли мы нужное устройство и точку данных
+    bool updateSuccess = false;
+
+    // 1. Проверяем устройство: ВЕНТИЛЯТОРЫ
+    if (strcmp(devId, "dev_fan_01") == 0) {
+        if (dps.containsKey("1")) {
+            set_var_supply_fan_speed(dps["1"].as<int>());
+            // Serial.println(F("Обновлено: Приток -> "));
+            updateSuccess = true;
+        }
+        if (dps.containsKey("2")) {
+            set_var_exhaust_fan_speed(dps["2"].as<int>());
+            // Serial.println(F("Обновлено: Вытяжка -> "));
+            updateSuccess = true;
+        }
+    }
+    // 2. Проверяем устройство: ПРИТОЧНЫЕ КЛАПАНА
+    else if (strcmp(devId, "dev_valves_zone1") == 0) {
+        if (dps.containsKey("101")) {
+            set_var_family_room_valve(dps["101"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Гостиная -> "));
+            updateSuccess = true;
+        }
+        if (dps.containsKey("102")) {
+            set_var_master_badroom_valve(dps["102"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Спальня -> "));
+            updateSuccess = true;
+        }
+        if (dps.containsKey("103")) {
+            set_var_children_room_valve(dps["103"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Детская -> "));
+            updateSuccess = true;
+        }
+        if (dps.containsKey("104")) {
+            set_var_pantry_room_valve(dps["104"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Кладовка -> "));
+            updateSuccess = true;
+        }
+    }
+    // 3. Проверяем устройство: ВЫТЯЖНЫЕ КЛАПАНА
+    else if (strcmp(devId, "dev_valves_zone2") == 0) {
+        if (dps.containsKey("201")) {
+            set_var_toilet_exhaust_valve(dps["201"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Туалет -> "));
+            updateSuccess = true;
+        }
+        if (dps.containsKey("202")) {
+            set_var_bathroom_exhaust_valve(dps["202"].as<int>());
+            // Serial.println(F("Обновлено: Клапан Ванная -> "));
+            updateSuccess = true;
+        }
+    }
+
+    if (!updateSuccess) {
+        Serial.print(F("Предупреждение: Неизвестный devId или dpsId: "));
+        Serial.println(devId);
+    }
+
+    return updateSuccess;
 }
 
 void setup() {
@@ -186,7 +271,7 @@ void setup() {
   Serial.printf("Использовано: %d байт, (%.2f %%)\n", usedBytes, (float)(usedBytes * 100) / (float)totalBytes);
 
   // Сервер HTTP
-  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("manual.html");
   // respond to GET requests on URL /heap
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
@@ -194,7 +279,33 @@ void setup() {
   server.on("/api/tuya/status", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "application/json", generateTuyaJson());
   });
+  server.on("/api/tuya/control", HTTP_POST,
+    [](AsyncWebServerRequest *request) {
+        // Этот пустой обработчик нужен по синтаксису библиотеки,
+        // основной ответ мы отправим чуть ниже в блоке onBody
+    },
+    NULL, // upload handler (не используется)
+    [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
 
+        // 1. Собираем входящие байты данных в строку C++ String
+        String jsonBuffer = "";
+        for (size_t i = 0; i < len; i++) {
+            jsonBuffer += (char)data[i];
+        }
+
+        // 2. Вызываем наш парсер и обновляем глобальные переменные
+        bool isOk = parseTuyaCommand(jsonBuffer);
+
+        // 3. Отвечаем клиенту (фронтенду) в зависимости от результата парсинга
+        if (isOk) {
+            // Успех — отправляем JSON с подтверждением
+            request->send(200, "application/json", "{\"status\":\"ok\"}");
+        } else {
+            // Ошибка парсинга или неизвестное устройство
+            request->send(400, "application/json", "{\"status\":\"error\",\"message\":\"Bad Request or Device Not Found\"}");
+        }
+    }
+  );
   server.begin();
   Serial.println("WEB сервер запущен");
 
@@ -469,7 +580,7 @@ void set_var_pantry_room_valve(int32_t value) {
     notifyChageValue();
 }
 
-// int32_t toilet_exhaust_valve;
+// int32_t toilet_exhaust_valve;tc
 
 int32_t get_var_toilet_exhaust_valve() {
     return can_out.CTRL_VALVE.VALVE_5_REQ < 50 ? 0 : 1;

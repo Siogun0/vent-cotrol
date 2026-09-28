@@ -15,19 +15,19 @@
         <!-- Верхняя информационная панель -->
         <div class="status-bar">
             <div class="status-left">
-                <span id="val-temp">-12.5°C</span>
-                <span id="val-humidity">68%</span>
+                <span id="val-temp">--°C</span>
+                <span id="val-humidity">--%</span>
             </div>
             <div class="status-left">
-                <span id="val-voltage">12.5V</span>
-                <span id="val-current">0.25A</span>
-                <span id="val-power">2.0W</span>
+                <span id="val-voltage">--V</span>
+                <span id="val-current">--A</span>
+                <span id="val-power">--W</span>
             </div>
             <div class="status-right">
                 <span id="net-bt" class="active">BT</span>
                 <span id="net-wifi" class="active">Wi-Fi</span>
                 <span id="net-can" class="active">CAN</span>
-                <span id="val-time" class="time">23:57</span>
+                <span id="val-time" class="time">--:--</span>
             </div>
         </div>
 
@@ -38,14 +38,14 @@
             <div class="control-row">
                 <div class="label">Приток</div>
                 <div class="slider-container">
-                    <input type="range" id="fan_in" min="0" max="100" value="0">
+                    <input type="range" id="fan_in" min="0" max="4" value="0">
                 </div>
             </div>
 
             <div class="control-row">
                 <div class="label">Вытяжка</div>
                 <div class="slider-container">
-                    <input type="range" id="fan_out" min="0" max="100" value="0">
+                    <input type="range" id="fan_out" min="0" max="4" value="0">
                 </div>
             </div>
         </div>
@@ -91,14 +91,14 @@
                 <div class="control-row">
                     <div class="label">Туалет</div>
                     <div class="slider-container">
-                        <input type="range" id="valve_toilet" min="0" max="100" value="0">
+                        <input type="range" id="valve_toilet" min="0" max="1" value="0">
                     </div>
                 </div>
 
                 <div class="control-row">
                     <div class="label">Ванная</div>
                     <div class="slider-container">
-                        <input type="range" id="valve_bathroom" min="0" max="100" value="95">
+                        <input type="range" id="valve_bath" min="0" max="1" value="0">
                     </div>
                 </div>
             </div>
