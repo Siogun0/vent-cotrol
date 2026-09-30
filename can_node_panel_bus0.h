@@ -150,7 +150,7 @@ typedef void (*t_mailbox_callback)(uint32_t id, uint64_t msg, uint32_t dlc);
 #endif
 
 #define MSG_CYCLE_CTRL_FAN 100000
-#define MSG_CYCLE_CTRL_VALVE 100000
+#define MSG_CYCLE_CTRL_VALVE 20000
 #define MSG_CYCLE_FAN_STATUS 100000
 #define MSG_CYCLE_VALVE_STATUS 100000
 #define MSG_CYCLE_POWER_STATUS 100000
