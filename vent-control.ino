@@ -12,6 +12,7 @@
 #include <LittleFS.h>
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
+#include <ArduinoOTA.h>
 #include <TAMC_GT911.h>
 extern "C" {
 #include "can_platform.h"
@@ -130,6 +131,38 @@ void setup() {
 
   serverRun(LittleFS);
 
+  // Настройка параметров OTA
+  // ArduinoOTA.setPort(3232); // Порт по умолчанию 3232
+  ArduinoOTA.setHostname("esp32-s3-panel"); // Имя устройства в сети
+  ArduinoOTA.setPassword("1234"); // Пароль для защиты загрузки (опционально)
+
+  // События процесса обновления
+  ArduinoOTA.onStart([]() {
+    String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
+    Serial.println("Начало обновления: " + type);
+  });
+  
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nОбновление завершено!");
+  });
+  
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Прогресс: %u%%\r", (progress / (total / 100)));
+  });
+  
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Ошибка[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Ошибка авторизации");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Ошибка запуска");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Ошибка подключения");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Ошибка приема");
+    else if (error == OTA_END_ERROR) Serial.println("Ошибка завершения");
+  });
+
+  // Запуск службы OTA
+  ArduinoOTA.begin();
+  Serial.println("OTA-сервер готов");
+
   Serial.println("🎉 Система успешно запущена!");
 }
 
@@ -170,6 +203,8 @@ void loop() {
     if (xcpBridge_vent)
 		  xcpBridge_vent->receiveCanPacket(twai_message);
 	}
+
+  ArduinoOTA.handle();
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
