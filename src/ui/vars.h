@@ -75,6 +75,16 @@ extern const char *get_var_wifi_password();
 extern void set_var_wifi_password(const char *value);
 extern int32_t get_var_scenario_id_active();
 extern void set_var_scenario_id_active(int32_t value);
+extern float get_var_temperature();
+extern void set_var_temperature(float value);
+extern float get_var_humidity();
+extern void set_var_humidity(float value);
+extern float get_var_voltage();
+extern void set_var_voltage(float value);
+extern float get_var_current();
+extern void set_var_current(float value);
+extern float get_var_power();
+extern void set_var_power(float value);
 
 #ifdef __cplusplus
 }

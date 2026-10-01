@@ -13,18 +13,30 @@ String generateTuyaJson() {
     StaticJsonDocument<1024> doc; 
 
     // Заполняем корень документа
-    doc["time"] = String(time_str);
+    doc["time"] = String(get_var_time_str());
 
     // Вложенный объект "sensors"
     JsonObject jsonSensors = doc.createNestedObject("sensors");
-    // jsonSensors["temp"] = temperatureSelf;
-    // jsonSensors["humidity"] = humiditySelf;
-    // jsonSensors["voltage"] = can_in.POWER_STATUS.V_12V;
-    // jsonSensors["current"] = can_in.POWER_STATUS.I_12V;
-    // jsonSensors["power"] = can_in.POWER_STATUS.P_12V;
+    jsonSensors["temp"] = get_var_temperature();
+    jsonSensors["humidity"] = get_var_humidity();
+    jsonSensors["voltage"] = get_var_voltage();
+    jsonSensors["current"] = get_var_current();
+    jsonSensors["power"] = get_var_power();
+
+    // Вложенный объект "network"
+    JsonObject jsonNetwork = doc.createNestedObject("network");
+    jsonNetwork["bt"]   = (int)get_var_bt_status();
+    jsonNetwork["wifi"] = (int)get_var_wifi_status();
+    jsonNetwork["can"]  = (int)get_var_can_status();
 
     // Вложенный массив устройств "devices"
     JsonArray jsonDevices = doc.createNestedArray("devices");
+
+    //Системные параметры и сценарии (dev_system)
+    JsonObject devSystem = jsonDevices.createNestedObject();
+    devSystem["devId"] = "dev_system";
+    JsonObject dpsSystem = devSystem.createNestedObject("dps");
+    dpsSystem["10"] = (int32_t)get_var_scenario_id_active(); // Запись сценария в DP 10
 
     // Устройство 1: Вентиляторы (dev_fan_01)
     JsonObject dev1 = jsonDevices.createNestedObject();
@@ -86,6 +98,17 @@ bool parseTuyaCommand(const String& jsonInput) {
 
     // Флаг, определяющий, нашли ли мы нужное устройство и точку данных
     bool updateSuccess = false;
+
+    // 0. Обработка системного устройства сценариев
+    if (strcmp(devId, "dev_system") == 0) {
+        if (dps.containsKey("10")) {
+            int32_t newScenario = dps["10"].as<int32_t>();
+            if (newScenario >= 0 && newScenario <= 8) {
+                set_var_scenario_id_active(newScenario);
+                Serial.printf("Tuya CMD: Системный сценарий изменен на %d\n", newScenario);
+            }
+        }
+    }
 
     // 1. Проверяем устройство: ВЕНТИЛЯТОРЫ
     if (strcmp(devId, "dev_fan_01") == 0) {

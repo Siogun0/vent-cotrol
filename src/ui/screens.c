@@ -1850,7 +1850,7 @@ void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int st
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_color(obj, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &ui_font_roboto_condensed_semi_bold_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text_static(obj, "-12.5°C 68%");
+            lv_label_set_text(obj, "");
         }
         {
             // PowerParam
@@ -1868,6 +1868,15 @@ void create_user_widget_status_bar(lv_obj_t *parent_obj, void *flowState, int st
 void tick_user_widget_status_bar(void *flowState, int startWidgetIndex) {
     (void)flowState;
     (void)startWidgetIndex;
+    {
+        const char *new_val = evalTextProperty(flowState, 5, 3, "Failed to evaluate Text in Label widget");
+        const char *cur_val = lv_label_get_text(((lv_obj_t **)&objects)[startWidgetIndex + 5]);
+        if (strcmp(new_val, cur_val) != 0) {
+            tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 5];
+            lv_label_set_text(((lv_obj_t **)&objects)[startWidgetIndex + 5], new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
     {
         bool new_val = evalBooleanProperty(flowState, 6, 3, "Failed to evaluate Hidden flag");
         bool cur_val = lv_obj_has_flag(((lv_obj_t **)&objects)[startWidgetIndex + 6], LV_OBJ_FLAG_HIDDEN);

@@ -311,6 +311,37 @@ void set_var_temperature_str(const char *value) {
     temperature_str[sizeof(temperature_str) / sizeof(char) - 1] = 0;
 }
 
+float get_var_temperature() {
+    return temperatureSelf;
+}
+
+void set_var_temperature(float value) {
+    temperatureSelf = value;
+}
+
+float get_var_humidity() {
+    return humiditySelf;
+}
+
+void set_var_humidity(float value) {
+    humiditySelf = value;
+}
+
+float get_var_voltage() {
+    return can_in.POWER_STATUS.V_12V;
+}
+void set_var_voltage(float value) {/*No Implemented*/}
+
+float get_var_current() {
+    return can_in.POWER_STATUS.I_12V;
+}
+void set_var_current(float value) {/*No Implemented*/}
+
+float get_var_power() {
+    return can_in.POWER_STATUS.P_12V;
+}
+void set_var_power(float value) {/*No Implemented*/}
+
 // int32_t supply_fan_speed;
 
 int32_t get_var_supply_fan_speed() {

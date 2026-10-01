@@ -24,12 +24,32 @@
                 <span id="val-power">--W</span>
             </div>
             <div class="status-right">
-                <span id="net-bt" class="active">BT</span>
-                <span id="net-wifi" class="active">Wi-Fi</span>
-                <span id="net-can" class="active">CAN</span>
+				<span id="net-link">LINK</span> 
+                <span id="net-bt">BT</span>
+                <span id="net-wifi">Wi-Fi</span>
+                <span id="net-can">CAN</span>
                 <span id="val-time" class="time">--:--</span>
             </div>
         </div>
+
+		<!-- Секция: Выбор сценария -->
+		<div class="section-card mode-selector-card">
+			<div class="section-title">Режим работы системы</div>
+			<div class="select-container">
+				<select id="vent-scenario">
+					<option value="0">Автоматически по датчикам</option>
+					<option value="1">Ручная настройка</option>
+					<option value="2">Максимальное проветривание</option>
+					<option value="3">Только мастер-спальня</option>
+					<option value="4">Две спальни</option>
+					<option value="5">Только вторая спальня</option>
+					<option value="6">Только гостиная</option>
+					<option value="7">Гостиная и спальни</option>
+					<option value="8">Никого нет</option>
+				</select>
+				<div class="select-arrow"></div>
+			</div>
+		</div>
 
         <!-- Секция: Вентиляторы -->
         <div class="section-card">
