@@ -172,6 +172,60 @@ void serverRun(fs::FS &fs)
 {
   // Сервер HTTP
   server.serveStatic("/", fs, "/").setDefaultFile("manual.html");
+
+  // 1. Главная страница со стандартным интерфейсом загрузки
+  // Отдает файл upload.html, который вы предварительно записали в папку data
+  server.on("/upload", HTTP_GET, [&fs](AsyncWebServerRequest *request) {
+    if (fs.exists("/upload.html")) {
+      request->send(fs, "/upload.html", "text/html");
+    } else {
+      request->send(404, "text/plain", "Критическая ошибка: файл upload.html не найден в LittleFS!");
+    }
+  });
+
+  // 2. Обработчик POST-запроса на загрузку файлов
+  // В ESPAsyncWebServer прием файлов делится на две части: 
+  // ответ на запрос (лямбда №1) и обработчик потока данных (лямбда №2)
+  server.on("/upload", HTTP_POST, 
+    // Лямбда №1: Вызывается ОДИН РАЗ, когда загрузка ВСЕХ файлов завершена
+    [](AsyncWebServerRequest *request) {
+      request->send(200, "text/plain", "OK");
+    },
+    // Лямбда №2: Вызывается МНОГОКРАТНО порциями (чанками) по мере прилета байт
+    [&fs](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+      static File uploadFile;
+      // index == 0 означает, что прилетела первая порция (чанк) НОВОГО файла
+      if (!index) {
+        // Проверяем имя файла. Браузер может прислать путь со слэшем (напр. /config.json)
+        if (!filename.startsWith("/")) {
+          filename = "/" + filename;
+        }
+        
+        Serial.printf("Начало загрузки файла: %s\n", filename.c_str());
+        
+        // Открываем файл для записи. Существующий файл с таким именем будет перезаписан.
+        uploadFile = fs.open(filename, FILE_WRITE);
+        if (!uploadFile) {
+          Serial.println("- Ошибка: не удалось создать файл во Flash!");
+          return;
+        }
+      }
+      
+      // Записываем текущую порцию байт в файл, если он успешно открыт
+      if (uploadFile) {
+        uploadFile.write(data, len);
+      }
+      
+      // final == true означает, что это последняя порция текущего файла
+      if (final) {
+        if (uploadFile) {
+          uploadFile.close(); // Закрываем файл, сохраняя данные
+          Serial.printf("Файл успешно сохранен. Размер: %d байт\n\n", index + len);
+        }
+      }
+    }
+  );
+
   // respond to GET requests on URL /heap
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
