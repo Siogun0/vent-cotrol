@@ -323,6 +323,46 @@
         "defaultValue": "1",
         "persistent": false,
         "native": true
+      },
+      {
+        "objID": "da7db47e-0cce-4da1-b048-9ba9c67c856f",
+        "name": "temperature",
+        "type": "float",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "8d6b80d9-7e3b-46bd-ff4d-649247ca605b",
+        "name": "humidity",
+        "type": "float",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "4f75ea1f-c780-439d-db60-b4a5cb063beb",
+        "name": "voltage",
+        "type": "float",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "837df21a-cecf-4df1-ef33-ef37c4eadc0d",
+        "name": "current",
+        "type": "float",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "4f75f658-54d0-48ba-fb25-d59f07fc174b",
+        "name": "power",
+        "type": "float",
+        "defaultValue": "0",
+        "persistent": false,
+        "native": true
       }
     ],
     "structures": [],
@@ -778,13 +818,13 @@
         {
           "objID": "ad8bc6c4-67ee-4d36-dbd0-b41263ec08dd",
           "type": "WatchVariableActionComponent",
-          "left": -365,
-          "top": 443,
-          "width": 166,
+          "left": -362,
+          "top": 376,
+          "width": 141,
           "height": 53,
           "customInputs": [],
           "customOutputs": [],
-          "variable": "temperature_str"
+          "variable": "temperature"
         },
         {
           "objID": "1ed36b50-025f-4d00-b135-c0832bb2b1f3",
@@ -915,6 +955,17 @@
               "useStackType": "literal"
             }
           ]
+        },
+        {
+          "objID": "0c158dcb-f46e-42f3-b3dc-b82a480826dc",
+          "type": "WatchVariableActionComponent",
+          "left": -362,
+          "top": 315,
+          "width": 123,
+          "height": 53,
+          "customInputs": [],
+          "customOutputs": [],
+          "variable": "humidity"
         }
       ],
       "connectionLines": [
@@ -1052,13 +1103,6 @@
           "input": "@seqin"
         },
         {
-          "objID": "93190eca-311d-4f88-c7a9-a2299fe2c5ca",
-          "source": "ad8bc6c4-67ee-4d36-dbd0-b41263ec08dd",
-          "output": "variable",
-          "target": "1ed36b50-025f-4d00-b135-c0832bb2b1f3",
-          "input": "@seqin"
-        },
-        {
           "objID": "fdc2684f-8468-416d-d4d3-9ed9b5d1d91e",
           "source": "27193611-f9b2-4191-9ad7-308935acd6ab",
           "output": "variable",
@@ -1105,6 +1149,27 @@
           "source": "7dbd8879-cc5f-47f2-ed5c-b43318d1d399",
           "output": "@seqout",
           "target": "eb1dcaaf-e6b2-47f5-c3d3-8cbc0d065a12",
+          "input": "@seqin"
+        },
+        {
+          "objID": "d842f623-c9a6-4e85-f515-791e1c96da40",
+          "source": "7dbd8879-cc5f-47f2-ed5c-b43318d1d399",
+          "output": "@seqout",
+          "target": "0c158dcb-f46e-42f3-b3dc-b82a480826dc",
+          "input": "@seqin"
+        },
+        {
+          "objID": "c1bdc07e-5b4a-401b-b33e-c7472d495e75",
+          "source": "ad8bc6c4-67ee-4d36-dbd0-b41263ec08dd",
+          "output": "variable",
+          "target": "1ed36b50-025f-4d00-b135-c0832bb2b1f3",
+          "input": "@seqin"
+        },
+        {
+          "objID": "6ee2734c-22c5-4395-8853-93f5bd2928f9",
+          "source": "0c158dcb-f46e-42f3-b3dc-b82a480826dc",
+          "output": "variable",
+          "target": "1ed36b50-025f-4d00-b135-c0832bb2b1f3",
           "input": "@seqin"
         }
       ],
@@ -4459,7 +4524,7 @@
           "left": 566,
           "top": 575,
           "width": 361,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -4476,7 +4541,7 @@
           "left": 566,
           "top": 508,
           "width": 373,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -4504,7 +4569,7 @@
           "left": 517,
           "top": 215,
           "width": 99,
-          "height": 51,
+          "height": 52,
           "customInputs": [],
           "customOutputs": [],
           "action": "Roll_screen",
@@ -4518,7 +4583,7 @@
           "type": "LVGLActionComponent",
           "left": 510,
           "top": 92,
-          "width": 273,
+          "width": 274,
           "height": 53,
           "customInputs": [],
           "customOutputs": [],
@@ -6035,7 +6100,7 @@
           "left": 561,
           "top": 61,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6052,7 +6117,7 @@
           "left": 561,
           "top": 117,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6069,7 +6134,7 @@
           "left": 561,
           "top": 173,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6086,7 +6151,7 @@
           "left": 561,
           "top": 229,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6103,7 +6168,7 @@
           "left": 561,
           "top": 285,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6120,7 +6185,7 @@
           "left": 561,
           "top": 341,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6137,7 +6202,7 @@
           "left": 561,
           "top": 397,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6154,7 +6219,7 @@
           "left": 561,
           "top": 453,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6171,7 +6236,7 @@
           "left": 561,
           "top": 509,
           "width": 183,
-          "height": 56,
+          "height": 57,
           "customInputs": [],
           "customOutputs": [],
           "entries": [
@@ -6722,10 +6787,11 @@
           },
           "group": "",
           "groupIndex": 0,
-          "text": "-12.5°C 68%",
-          "textType": "literal",
+          "text": "temperature_str",
+          "textType": "expression",
           "longMode": "WRAP",
-          "recolor": false
+          "recolor": false,
+          "previewValue": "-12.3°C 68%"
         },
         {
           "objID": "196275e3-bd6a-4e60-801b-c680d7c424ee",
