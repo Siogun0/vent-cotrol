@@ -266,18 +266,22 @@ input[type="range"]::-moz-range-thumb {
 .mode-selector-card {
     padding: 12px 15px;
     background: rgba(13, 37, 87, 0.4);
-    /* border-color УДАЛЕН, теперь граница точь-в-точь как у блока вентиляторов */
 }
 
-.select-container {
+/* Главный контейнер */
+.custom-select {
     position: relative;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Стилизация самого тега select */
-.select-container select {
-    width: 100%;
-    padding: 10px 35px 10px 12px;
+/* Триггер (кнопка) */
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
     background: rgba(4, 15, 41, 0.9);
     border: 1px solid var(--panel-border);
     border-radius: 4px;
@@ -285,50 +289,83 @@ input[type="range"]::-moz-range-thumb {
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    
-    /* Отключаем нативный стиль iOS Safari, который форсирует белый фон */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    
-    /* Принудительный темный режим для системного выпадающего окна */
-    color-scheme: dark; 
-    
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-
-/* Эффект свечения при клике и фокусе */
-.select-container select:focus {
-    outline: none;
+/* Свечение при открытии списка */
+.custom-select.open .custom-select-trigger {
     border-color: var(--accent-blue);
     box-shadow: 0 0 12px rgba(61, 150, 255, 0.5);
 }
 
-/* Кастомизация выпадающих пунктов */
-.select-container select option {
-    background: #040f29;
-    color: var(--text-main);
-    padding: 10px;
-}
-
-/* Кастомная стрелочка справа */
+/* Стрелочка */
 .select-arrow {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 6px solid var(--text-dim);
-    pointer-events: none;
-    transition: border-top-color 0.3s;
+    transition: transform 0.3s, border-top-color 0.3s;
 }
 
-.select-container select:focus + .select-arrow {
+.custom-select.open .select-arrow {
+    transform: rotate(180deg);
     border-top-color: var(--accent-blue);
+}
+
+/* Контейнер с опциями (выпадающая плашка) */
+.custom-options {
+    position: absolute;
+    display: block;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #040f29;
+    border: 1px solid var(--panel-border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    padding: 5px 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    
+    /* Скрыто по умолчанию */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-5px);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Показываем при открытии */
+.custom-select.open .custom-options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Стили для каждого пункта */
+.custom-option {
+    position: relative;
+    padding: 10px 15px;
+    color: var(--text-dim);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Подсветка при наведении пальцем/мышкой */
+.custom-option:hover {
+    background: rgba(61, 150, 255, 0.15);
+    color: #ffffff;
+}
+
+/* Выбранный пункт */
+.custom-option.selected {
+    color: var(--accent-blue);
+    text-shadow: 0 0 8px var(--accent-glow);
+    background: rgba(61, 150, 255, 0.05);
 }
 
 

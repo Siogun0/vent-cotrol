@@ -75,13 +75,23 @@ async function loadDashboardData() {
             linkElement.classList.add('status-color-link-online');
         }
         
-        // 1.1. Обновление системных датчиков
+        // 1.1. Обновление системных датчиков с ограничением знаков после запятой
         if (data.sensors) {
-            if (data.sensors.temp) document.getElementById('val-temp').textContent = data.sensors.temp + '°C';
-            if (data.sensors.humidity) document.getElementById('val-humidity').textContent = data.sensors.humidity + '%';
-            if (data.sensors.voltage) document.getElementById('val-voltage').textContent = data.sensors.voltage + 'V';
-            if (data.sensors.current) document.getElementById('val-current').textContent = data.sensors.current + 'A';
-            if (data.sensors.power) document.getElementById('val-power').textContent = data.sensors.power + 'W';
+            if (data.sensors.temp !== undefined) {
+                document.getElementById('val-temp').textContent = Number(data.sensors.temp).toFixed(1) + '°C';
+            }
+            if (data.sensors.humidity !== undefined) {
+                document.getElementById('val-humidity').textContent = Number(data.sensors.humidity).toFixed(1) + '%';
+            }
+            if (data.sensors.voltage !== undefined) {
+                document.getElementById('val-voltage').textContent = Number(data.sensors.voltage).toFixed(1) + 'V';
+            }
+            if (data.sensors.current !== undefined) {
+                document.getElementById('val-current').textContent = Number(data.sensors.current).toFixed(2) + 'A';
+            }
+            if (data.sensors.power !== undefined) {
+                document.getElementById('val-power').textContent = Number(data.sensors.power).toFixed(1) + 'W';
+            }
         }
         
         // Чтение структуры объекта network (цвета внутренних шин BT, WiFi, CAN)
@@ -232,6 +242,77 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Включение циклического автоопроса
     startPolling();
+	
+	// --- ИНИЦИАЛИЗАЦИЯ КАСТОМНОГО ВЫПАДАЮЩЕГО СПИСКА ---
+    const customSelect = document.getElementById('custom-scenario-select');
+    const trigger = customSelect.querySelector('.custom-select-trigger');
+    const optionsContainer = customSelect.querySelector('.custom-options');
+    const optionsList = customSelect.querySelectorAll('.custom-option');
+    const triggerText = document.getElementById('custom-select-text');
+    const nativeSelect = document.getElementById('vent-scenario');
+
+    // Открытие/закрытие по клику на шапку
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = customSelect.classList.contains('open');
+        if (!isOpen) {
+            isUserInteracting = true; // Блокируем автоопрос сети
+            customSelect.classList.add('open');
+        } else {
+            customSelect.classList.remove('open');
+            isUserInteracting = false;
+        }
+    });
+
+    // Выбор пункта
+    optionsList.forEach(option => {
+        option.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            
+            // Визуально переключаем активный класс
+            optionsList.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Обновляем текст в шапке
+            triggerText.textContent = this.textContent;
+            customSelect.classList.remove('open');
+
+            // Синхронизируем значение в скрытый нативный селект
+            const newValue = this.getAttribute('data-value');
+            nativeSelect.value = newValue;
+
+            // Триггерим отправку команды через твой стандартный Tuya POST метод
+            isUserInteracting = true;
+            await sendTuyaCommand(nativeSelect.id, newValue);
+            
+            isUserInteracting = false;
+            await loadDashboardData();
+        });
+    });
+
+    // Закрытие списка при клике в любое другое место экрана
+    document.addEventListener('click', () => {
+        if (customSelect.classList.contains('open')) {
+            customSelect.classList.remove('open');
+            isUserInteracting = false;
+        }
+    });
+
+    // Дополнительный хук для loadDashboardData: 
+    // Чтобы при обновлении из сети менялся текст и в нашем кастомном виджете
+    const originalLoadData = loadDashboardData;
+    loadDashboardData = async function() {
+        await originalLoadData();
+        if (!isUserInteracting && nativeSelect) {
+            const activeOption = [...optionsList].find(opt => opt.getAttribute('data-value') == nativeSelect.value);
+            if (activeOption) {
+                optionsList.forEach(opt => opt.classList.remove('selected'));
+                activeOption.classList.add('selected');
+                triggerText.textContent = activeOption.textContent;
+            }
+        }
+    };
+
 });
 
 // Если вкладка браузера уходит в фон, останавливаем опрос для экономии батареи/трафика
