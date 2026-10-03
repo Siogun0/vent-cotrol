@@ -1,4 +1,4 @@
-#include <DHT.h>
+#include "dhtESP32-rmt.h"
 
 #define DHT22_PIN    40
 #define DHTTYPE      DHT22
@@ -8,24 +8,24 @@ extern volatile float humiditySelf;
 
 TaskHandle_t dht22TaskHandle = NULL;
 
-DHT dht(DHT22_PIN, DHTTYPE);
-
 void dht22Task(void *pvParameters) {
-  dht.begin();
-
+  vTaskDelay(pdMS_TO_TICKS(2000));
   while (true) {
-    // Чтение DHT22 занимает около 5 мс, библиотека сама считает пакет данных
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
+    float h;
+    float t;
 
-    // Проверяем корректность данных, чтобы не записать ошибку (NaN)
-    if (!isnan(h) && !isnan(t)) {
+    uint8_t error = read_dht(t, h, DHT22_PIN, DHTTYPE);
+    if (!error) {
       humiditySelf = h;
       temperatureSelf = t;
+      Serial.printf("%f C %f % \n", t, h);
+    }
+    else
+    {
+      Serial.printf("Error reading DHT22: %d\n", error);
     }
 
-    // DHT22 строго требует паузу минимум в 2 секунды между считываниями
-    vTaskDelay(pdMS_TO_TICKS(2000)); 
+    vTaskDelay(pdMS_TO_TICKS(10000));
   }
 }
 
@@ -42,3 +42,16 @@ void tempSensorInit()
     0                     // На каком ядре запускать (Ядро 0)
   );
 }
+
+/*
+Error codes
+0: OK
+1: TOO_SOON
+2: DRIVER
+3: TIMEOUT
+4: NACK
+5: BAD_DATA
+6: CHECKSUM
+7: UNDERFLOW
+8: OVERFLOW
+*/
