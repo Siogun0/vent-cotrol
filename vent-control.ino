@@ -161,7 +161,7 @@ void setup() {
 
   // Запуск службы OTA
   ArduinoOTA.begin();
-  Serial.println("OTA-сервер готов");
+  Serial.println("OTA-сервер запущен");
 
   Serial.println("🎉 Система успешно запущена!");
 }
@@ -415,6 +415,7 @@ int32_t get_var_family_room_valve() {
 
 void set_var_family_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_1_REQ = constrain(value, 0, 255);
+    can_out.tx_now.ctrl_valve = 1;
     if (scenario_id_active == MANUAL_CONTROL)
     {
       scenarios[scenario_id_active].family_room_valve = can_out.CTRL_VALVE.VALVE_1_REQ;
@@ -430,6 +431,7 @@ int32_t get_var_master_badroom_valve() {
 
 void set_var_master_badroom_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_2_REQ = constrain(value, 0, 255);
+    can_out.tx_now.ctrl_valve = 1;
     if (scenario_id_active == MANUAL_CONTROL)
     {
       scenarios[scenario_id_active].master_badroom_valve = can_out.CTRL_VALVE.VALVE_2_REQ;
@@ -445,6 +447,7 @@ int32_t get_var_children_room_valve() {
 
 void set_var_children_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_3_REQ = constrain(value, 0, 255);
+    can_out.tx_now.ctrl_valve = 1;
     if (scenario_id_active == MANUAL_CONTROL)
     {
       scenarios[scenario_id_active].children_room_valve = can_out.CTRL_VALVE.VALVE_3_REQ;
@@ -460,6 +463,7 @@ int32_t get_var_pantry_room_valve() {
 
 void set_var_pantry_room_valve(int32_t value) {
     can_out.CTRL_VALVE.VALVE_4_REQ = constrain(value, 0, 255);
+    can_out.tx_now.ctrl_valve = 1;
     if (scenario_id_active == MANUAL_CONTROL)
     {
       scenarios[scenario_id_active].pantry_room_valve = can_out.CTRL_VALVE.VALVE_4_REQ;

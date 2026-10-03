@@ -18,7 +18,7 @@ void dht22Task(void *pvParameters) {
     if (!error) {
       humiditySelf = h;
       temperatureSelf = t;
-      Serial.printf("%f C %f % \n", t, h);
+      // Serial.printf("%f C %f % \n", t, h);
     }
     else
     {
