@@ -13,6 +13,9 @@
 #define TOUCH_INT  41
 #define TOUCH_RST  -1  // На этой плате пин сброса тача часто не разведен отдельно
 
+#define GT911_I2C_ADDR 0x5D
+#define MAX_TOUCH_ERRORS 5
+
 // Размер буфера для экрана
 #define DISP_DRAW_BUF_SIZE (2 * 480 * 40)
 
@@ -79,11 +82,73 @@ void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
     data->state = LV_INDEV_STATE_RELEASED;
   }
 }
+/*void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
+  static uint8_t error_counter = 0;
+  static int16_t last_valid_x = 0;
+  static int16_t last_valid_y = 0;
+
+  // 1. Проверяем доступность устройства на шине I2C
+  Wire.beginTransmission(GT911_I2C_ADDR);
+  if (Wire.endTransmission() != 0) {
+    error_counter++;
+    
+    // Если ошибок критически много, восстанавливаем шину I2C программно
+    if (error_counter >= MAX_TOUCH_ERRORS) {
+      Serial.println("[Touch] GT911 не отвечает! Программный перезапуск шины I2C...");
+      
+      // Полностью закрываем и открываем I2C шину заново
+      Wire.end(); 
+      delay(10); // Короткая пауза для стабилизации линий
+      Wire.begin(TOUCH_SDA, TOUCH_SCL, 400000);
+      Wire.setTimeOut(50); // Возвращаем таймаут
+      
+      // Мягкая переинициализация библиотеки тача
+      ts.begin(); 
+      
+      error_counter = 0;
+    }
+    
+    // Передаем LVGL стабильное состояние "отпущено" без скачков
+    data->state = LV_INDEV_STATE_RELEASED;
+    data->point.x = last_valid_x;
+    data->point.y = last_valid_y;
+    return;
+  }
+
+  // Если всё ок, сбрасываем счетчик ошибок
+  error_counter = 0;
+
+  // 2. Опрашиваем чип GT911
+  ts.read(); 
+
+  // 3. Валидация данных
+  if (ts.isTouched && ts.touches > 0) {
+    int16_t raw_x = ts.points[0].x;
+    int16_t raw_y = ts.points[0].y;
+
+    // Проверка границ для экрана 480x480
+    if (raw_x >= 0 && raw_x < 480 && raw_y >= 0 && raw_y < 480) {
+      data->state = LV_INDEV_STATE_PRESSED;
+      data->point.x = raw_x;
+      data->point.y = raw_y;
+      
+      last_valid_x = raw_x;
+      last_valid_y = raw_y;
+    } else {
+      data->state = LV_INDEV_STATE_RELEASED;
+      data->point.x = last_valid_x;
+      data->point.y = last_valid_y;
+    }
+  } else {
+    data->state = LV_INDEV_STATE_RELEASED;
+  }
+}*/
 
 void screen_init(void)
 {
   // --- Инициализация тачскрина ---
   ts.begin();
+  Wire.setTimeOut(50);
   // Если нажатия будут инвертированы по осям, эти параметры можно изменить (setRotation)
   ts.setRotation(ROTATION_INVERTED);
 
