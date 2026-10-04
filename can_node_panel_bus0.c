@@ -150,7 +150,7 @@ void can_node_panel_bus0_tx(volatile t_can_node_panel_bus0_output *out)
     //CTRL_FAN
     if((msg_cntr_ctrl_fan >= MSG_CYCLE_CTRL_FAN) || (out->tx_now.ctrl_fan))
     {
-        msg_cntr_ctrl_fan -= out->tx_now.ctrl_fan ? msg_cntr_ctrl_fan : MSG_CYCLE_CTRL_FAN;
+        msg_cntr_ctrl_fan = (out->tx_now.ctrl_fan || msg_cntr_ctrl_fan >= 2 * MSG_CYCLE_CTRL_FAN) ? 0 : msg_cntr_ctrl_fan - MSG_CYCLE_CTRL_FAN;
         out->tx_now.ctrl_fan = 0;
         
         msg = 0;
@@ -168,7 +168,7 @@ void can_node_panel_bus0_tx(volatile t_can_node_panel_bus0_output *out)
     //CTRL_VALVE
     if((msg_cntr_ctrl_valve >= MSG_CYCLE_CTRL_VALVE) || (out->tx_now.ctrl_valve))
     {
-        msg_cntr_ctrl_valve -= out->tx_now.ctrl_valve ? msg_cntr_ctrl_valve : MSG_CYCLE_CTRL_VALVE;
+        msg_cntr_ctrl_valve = (out->tx_now.ctrl_valve || msg_cntr_ctrl_valve >= 2 * MSG_CYCLE_CTRL_VALVE) ? 0 : msg_cntr_ctrl_valve - MSG_CYCLE_CTRL_VALVE;
         out->tx_now.ctrl_valve = 0;
         
         msg = 0;
