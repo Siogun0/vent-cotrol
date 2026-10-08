@@ -77,8 +77,9 @@ char wifi_password[64] = { 0 };
 void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
+  // delay(2000);
   // Инициализация CAN
-  platform_can_init();
+  platform_can_init(CAN0, 500'000);
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
   can_timer_init();
   loadLastState();
@@ -174,10 +175,6 @@ void loop() {
   lv_timer_handler_run_in_period(10);
   ui_tick();
 
-  if(platform_can_poll(0))
-  {
-    //CAN ACTIVE
-  }
   can_node_panel_bus0_rx(&can_in);
   can_node_panel_bus0_tx(&can_out);
 
@@ -187,21 +184,21 @@ void loop() {
   if(platform_can_is_message_arrived(0, MBN_NEXT_FREE_BUS_0))
 	{
 		uint64_t msg = platform_can_get_mb_data(0, MBN_NEXT_FREE_BUS_0);
-    twai_message_t twai_message;
-    twai_message.identifier = 0x7AF;
-    twai_message.extd = 0;
-	  twai_message.rtr = 0;
-    twai_message.data_length_code = 8;
-    twai_message.data[0] = (msg >> 0) & 0xFF;
-    twai_message.data[1] = (msg >> 8) & 0xFF;
-    twai_message.data[2] = (msg >> 16) & 0xFF;
-    twai_message.data[3] = (msg >> 24) & 0xFF;
-    twai_message.data[4] = (msg >> 32) & 0xFF;
-    twai_message.data[5] = (msg >> 40) & 0xFF;
-    twai_message.data[6] = (msg >> 48) & 0xFF;
-    twai_message.data[7] = (msg >> 56) & 0xFF;
-    if (xcpBridge_vent)
-		  xcpBridge_vent->receiveCanPacket(twai_message);
+    // twai_message_t twai_message;
+    // twai_message.identifier = 0x7AF;
+    // twai_message.extd = 0;
+	  // twai_message.rtr = 0;
+    // twai_message.data_length_code = 8;
+    // twai_message.data[0] = (msg >> 0) & 0xFF;
+    // twai_message.data[1] = (msg >> 8) & 0xFF;
+    // twai_message.data[2] = (msg >> 16) & 0xFF;
+    // twai_message.data[3] = (msg >> 24) & 0xFF;
+    // twai_message.data[4] = (msg >> 32) & 0xFF;
+    // twai_message.data[5] = (msg >> 40) & 0xFF;
+    // twai_message.data[6] = (msg >> 48) & 0xFF;
+    // twai_message.data[7] = (msg >> 56) & 0xFF;
+    // if (xcpBridge_vent)
+		//   xcpBridge_vent->receiveCanPacket(twai_message);
 	}
 
   ArduinoOTA.handle();

@@ -1,69 +1,94 @@
-/*
- * can_platform.c
- *
- *  Created on: Dec 3, 2021
- *      Author: arh
- */
+#include "esp_twai.h"
 #include "can_platform.h"
 
+static virtual_mailbox_t DRAM_ATTR virt_mbx[CAN_BUS_MAX][VIRT_MBX_MAX] = {0};
+static twai_node_handle_t DRAM_ATTR node_hdl[CAN_BUS_MAX] = {NULL};
 
-static virtual_mailbox_t virt_mbx[CAN_BUS_MAX][VIRT_MBX_MAX] = {0};
-
-void platform_can_init()
+static bool IRAM_ATTR twai_rx_cb(twai_node_handle_t handle, const twai_rx_done_event_data_t *edata, void *user_ctx)
 {
- // 1. Конфигурация контактов и режима работы
-  twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_PIN, CAN_RX_PIN, TWAI_MODE_NORMAL);
-
-  // 2. Установка скорости шины (например, 500 kbps)
-  twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
-
-  // 3. Настройка фильтрации (принимать все сообщения)
-  twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
-
-  // 4. Установка драйвера
-  twai_driver_install(&g_config, &t_config, &f_config);
-
-  // 5. Запуск драйвера
-  twai_start();
+    uint8_t recv_buff[8];
+    twai_frame_t rx_frame = {
+        .buffer = recv_buff,
+        .buffer_len = sizeof(recv_buff),
+    };
+    if (ESP_OK == twai_node_receive_from_isr(handle, &rx_frame)) {
+      platform_can_msg_recieve((uint32_t)user_ctx, &rx_frame);
+    }
+    return false;
 }
 
-uint32_t platform_can_poll(uint32_t bus_id)
+static bool IRAM_ATTR twai_tx_done_cb(twai_node_handle_t handle, const twai_tx_done_event_data_t *edata, void *user_ctx)
 {
-	twai_message_t message = {};
-	if(twai_receive(&message, pdMS_TO_TICKS(0)) == ESP_OK)
+	uint32_t bus_id = (uint32_t)user_ctx;
+	for(int mbn = 0; mbn < VIRT_MBX_MAX; ++mbn)
 	{
-		platform_can_msg_recieve(bus_id, &message);
-		return 1;
+		if(edata->done_tx_frame == &virt_mbx[bus_id][mbn].twai_frame)
+		{
+			virt_mbx[bus_id][mbn].transmitting = 0;
+			break;
+		}
 	}
-	return 0;
+	return false;
+}
+
+static bool IRAM_ATTR twai_state_change_cb(twai_node_handle_t handle, const twai_state_change_event_data_t *edata, void *user_ctx)
+{
+	if (edata->new_sta == TWAI_ERROR_BUS_OFF)
+	{
+		twai_node_recover(handle);
+	}
+	return false;
+}
+
+void platform_can_init(uint32_t bus_id, uint32_t bus_speed)
+{
+	twai_onchip_node_config_t node_config = {
+    .io_cfg.tx = CAN_TX_PIN,
+    .io_cfg.rx = CAN_RX_PIN,
+    .bit_timing.bitrate = bus_speed,
+    .tx_queue_depth = VIRT_MBX_MAX,        // Transmit queue depth set
+	};
+
+	ESP_ERROR_CHECK(twai_new_node_onchip(&node_config, &node_hdl[bus_id]));
+
+	twai_event_callbacks_t user_cbs = {
+    .on_rx_done = twai_rx_cb,
+		.on_tx_done = twai_tx_done_cb,
+		.on_state_change = NULL,
+		.on_error = NULL
+	};
+	ESP_ERROR_CHECK(twai_node_register_event_callbacks(node_hdl[bus_id], &user_cbs, (void*)bus_id));
+
+	ESP_ERROR_CHECK(twai_node_enable(node_hdl[bus_id]));
 }
 
 void platform_can_init_rx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc)
 {
-  virt_mbx[bus_id][mbn].id = id;
-  virt_mbx[bus_id][mbn].dlc = dlc;
+  platform_can_init_tx_mb(bus_id, mbn, id, dlc);
 }
 
 void platform_can_init_tx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc)
 {
-	virt_mbx[bus_id][mbn].id = id;
+	virt_mbx[bus_id][mbn].twai_frame.header.id = id;
+	virt_mbx[bus_id][mbn].twai_frame.header.dlc = dlc;
+	virt_mbx[bus_id][mbn].twai_frame.header.ide = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.rtr = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.fdf = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.brs = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.esi = 0;
+
+	virt_mbx[bus_id][mbn].twai_frame.buffer = virt_mbx[bus_id][mbn].buffer;
+	virt_mbx[bus_id][mbn].twai_frame.buffer_len = dlc;
 }
 
-void platform_can_msg_recieve(uint32_t bus_id, const twai_message_t* twai_message)
+void IRAM_ATTR platform_can_msg_recieve(uint32_t bus_id, const twai_frame_t* twai_frame)
 {
-	for(int i = 0; i < VIRT_MBX_MAX; i++)
+	for(int mbn = 0; mbn < VIRT_MBX_MAX; ++mbn)
 	{
-		if(twai_message->identifier == virt_mbx[bus_id][i].id)
+		if(twai_frame->header.id == virt_mbx[bus_id][mbn].twai_frame.header.id)
 		{
-			virt_mbx[bus_id][i].arrived = 1;
-			virt_mbx[bus_id][i].data = (uint64_t)twai_message->data[0] << 0 |
-					(uint64_t)twai_message->data[1] << 8 |
-					(uint64_t)twai_message->data[2] << 16 |
-					(uint64_t)twai_message->data[3] << 24 |
-					(uint64_t)twai_message->data[4] << 32 |
-					(uint64_t)twai_message->data[5] << 40 |
-					(uint64_t)twai_message->data[6] << 48 |
-					(uint64_t)twai_message->data[7] << 56;
+			memcpy(virt_mbx[bus_id][mbn].buffer, twai_frame->buffer, twai_frame->buffer_len); //TODO queue
+			virt_mbx[bus_id][mbn].arrived = 1;
 			return;
 		}
 	}
@@ -71,41 +96,72 @@ void platform_can_msg_recieve(uint32_t bus_id, const twai_message_t* twai_messag
 
 void platform_can_xmit_mb(uint32_t bus_id, uint32_t mbn, uint64_t msg)
 {
-	platform_can_dyn_xmit_mb(bus_id, mbn, virt_mbx[bus_id][mbn].id, 8, msg);
+	virt_mbx[bus_id][mbn].buffer[0] = (msg >> 0) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[1] = (msg >> 8) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[2] = (msg >> 16) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[3] = (msg >> 24) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[4] = (msg >> 32) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[5] = (msg >> 40) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[6] = (msg >> 48) & 0xFF;
+	virt_mbx[bus_id][mbn].buffer[7] = (msg >> 56) & 0xFF;
+
+	// virt_mbx[bus_id][mbn].twai_frame.buffer = virt_mbx[bus_id][mbn].buffer;
+
+	if (twai_node_transmit(node_hdl[bus_id], &virt_mbx[bus_id][mbn].twai_frame, 0) == ESP_OK)
+  {
+		virt_mbx[bus_id][mbn].transmitting = 1;
+	}
 }
 
 void platform_can_dyn_xmit_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc, uint64_t msg)
 {
-	twai_message_t twai_message = {};
+	virt_mbx[bus_id][mbn].twai_frame.header.id = id;
+  virt_mbx[bus_id][mbn].twai_frame.header.ide = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.dlc = dlc;
+	virt_mbx[bus_id][mbn].twai_frame.buffer_len = dlc;
 
-	// for standart ID
-	twai_message.identifier = id;
+	platform_can_xmit_mb(bus_id, mbn, msg);
+}
 
-	twai_message.extd = 0;
-	twai_message.rtr = 0;
-	twai_message.data_length_code = dlc;
+void platform_can_xmit_array_mb(uint32_t bus_id, uint32_t mbn, uint8_t* data, uint8_t len)
+{
+	len = len < 8 ? len : 8;
+	memcpy(virt_mbx[bus_id][mbn].buffer, data, len);
 
-	twai_message.data[0] = (msg >> 0) & 0xFF;
-	twai_message.data[1] = (msg >> 8) & 0xFF;
-	twai_message.data[2] = (msg >> 16) & 0xFF;
-	twai_message.data[3] = (msg >> 24) & 0xFF;
-	twai_message.data[4] = (msg >> 32) & 0xFF;
-	twai_message.data[5] = (msg >> 40) & 0xFF;
-	twai_message.data[6] = (msg >> 48) & 0xFF;
-	twai_message.data[7] = (msg >> 56) & 0xFF;
+	if (twai_node_transmit(node_hdl[bus_id], &virt_mbx[bus_id][mbn].twai_frame, 0) == ESP_OK)
+  {
+		virt_mbx[bus_id][mbn].transmitting = 1;
+	}
+}
 
-	twai_transmit(&twai_message, pdMS_TO_TICKS(0));
+void platform_can_dyn_xmit_array_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc, uint8_t* data, uint8_t len)
+{
+	virt_mbx[bus_id][mbn].twai_frame.header.id = id;
+  virt_mbx[bus_id][mbn].twai_frame.header.ide = 0;
+	virt_mbx[bus_id][mbn].twai_frame.header.dlc = dlc;
+	virt_mbx[bus_id][mbn].twai_frame.buffer_len = dlc;
+
+	platform_can_xmit_array_mb(bus_id, mbn, data, len);
 }
 
 uint64_t platform_can_get_mb_data(uint32_t bus_id, uint32_t mbn)
 {
 	virt_mbx[bus_id][mbn].arrived = 0;
-	return virt_mbx[bus_id][mbn].data;
+	uint8_t* buffer = virt_mbx[bus_id][mbn].buffer;
+	uint64_t data = (uint64_t)buffer[0] << 0 |
+					(uint64_t)buffer[1] << 8 |
+					(uint64_t)buffer[2] << 16 |
+					(uint64_t)buffer[3] << 24 |
+					(uint64_t)buffer[4] << 32 |
+					(uint64_t)buffer[5] << 40 |
+					(uint64_t)buffer[6] << 48 |
+					(uint64_t)buffer[7] << 56;
+	return data;
 }
 
 uint32_t platform_can_get_mb_dlc(uint32_t bus_id, uint32_t mbn)
 {
-	return virt_mbx[bus_id][mbn].dlc;
+	return virt_mbx[bus_id][mbn].twai_frame.header.dlc;
 }
 
 uint32_t platform_can_is_message_arrived(uint32_t bus_id, uint32_t mbn)
@@ -115,6 +171,6 @@ uint32_t platform_can_is_message_arrived(uint32_t bus_id, uint32_t mbn)
 
 uint32_t platform_can_is_message_sent(uint32_t bus_id, uint32_t mbn)
 {
-	return 1;
+	return virt_mbx[bus_id][mbn].transmitting ? 0 : 1;
 }
 
