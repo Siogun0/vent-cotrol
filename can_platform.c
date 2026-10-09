@@ -1,20 +1,28 @@
 #include "esp_twai.h"
 #include "can_platform.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 
 static virtual_mailbox_t DRAM_ATTR virt_mbx[CAN_BUS_MAX][VIRT_MBX_MAX] = {0};
 static twai_node_handle_t DRAM_ATTR node_hdl[CAN_BUS_MAX] = {NULL};
 
+TaskHandle_t twai_rx_task[CAN_BUS_MAX] = {NULL};
+QueueHandle_t twai_rx_queue[CAN_BUS_MAX] = {NULL};
+
 static bool IRAM_ATTR twai_rx_cb(twai_node_handle_t handle, const twai_rx_done_event_data_t *edata, void *user_ctx)
 {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uint8_t recv_buff[8];
     twai_frame_t rx_frame = {
         .buffer = recv_buff,
         .buffer_len = sizeof(recv_buff),
     };
-    if (ESP_OK == twai_node_receive_from_isr(handle, &rx_frame)) {
-      platform_can_msg_recieve((uint32_t)user_ctx, &rx_frame);
+    if (twai_node_receive_from_isr(handle, &rx_frame) == ESP_OK)
+		{
+			xQueueSendFromISR(twai_rx_queue[(uint32_t)user_ctx], &rx_frame, &xHigherPriorityTaskWoken);
     }
-    return false;
+    return xHigherPriorityTaskWoken == pdTRUE;
 }
 
 static bool IRAM_ATTR twai_tx_done_cb(twai_node_handle_t handle, const twai_tx_done_event_data_t *edata, void *user_ctx)
@@ -40,10 +48,27 @@ static bool IRAM_ATTR twai_state_change_cb(twai_node_handle_t handle, const twai
 	return false;
 }
 
+void platform_can_rx_task(void* user_ctx) //FIXME separate task
+{
+	uint32_t bus_id = (uint32_t)user_ctx;
+	while(1)
+	{
+	  uint8_t recv_buff[8];
+    twai_frame_t rx_frame = {
+        .buffer = recv_buff,
+        .buffer_len = sizeof(recv_buff),
+    };
+		if (xQueueReceive(twai_rx_queue[bus_id], &rx_frame, portMAX_DELAY) == pdPASS)
+		{
+			platform_can_msg_recieve(bus_id, &rx_frame);
+		}
+	}
+}
+
 void platform_can_init(uint32_t bus_id, uint32_t bus_speed)
 {
 	twai_onchip_node_config_t node_config = {
-    .io_cfg.tx = CAN_TX_PIN,
+    .io_cfg.tx = CAN_TX_PIN,	//TODO bus_id
     .io_cfg.rx = CAN_RX_PIN,
     .bit_timing.bitrate = bus_speed,
     .tx_queue_depth = VIRT_MBX_MAX,        // Transmit queue depth set
@@ -54,10 +79,24 @@ void platform_can_init(uint32_t bus_id, uint32_t bus_speed)
 	twai_event_callbacks_t user_cbs = {
     .on_rx_done = twai_rx_cb,
 		.on_tx_done = twai_tx_done_cb,
-		.on_state_change = NULL,
+		.on_state_change = twai_state_change_cb,
 		.on_error = NULL
 	};
 	ESP_ERROR_CHECK(twai_node_register_event_callbacks(node_hdl[bus_id], &user_cbs, (void*)bus_id));
+
+	twai_rx_queue[bus_id] = xQueueCreate( VIRT_MBX_MAX, sizeof(twai_frame_t) );
+	ESP_ERROR_CHECK(twai_rx_queue[bus_id] ? ESP_OK : ESP_FAIL);
+
+	// Создаем задачу FreeRTOS
+  xTaskCreatePinnedToCore(
+    platform_can_rx_task, // Функция, которая будет выполняться
+    "СAN_Task",           // Имя задачи (для отладки)
+    4096,                 // Размер стека в байтах
+    (void*)bus_id,        // Параметры задачи
+    1,                    // Приоритет задачи (1 - низкий, вполне достаточно)
+    &twai_rx_task[bus_id],// Хэндл задачи
+    tskNO_AFFINITY        // На каком ядре запускать (Ядро 0)
+  );
 
 	ESP_ERROR_CHECK(twai_node_enable(node_hdl[bus_id]));
 }
