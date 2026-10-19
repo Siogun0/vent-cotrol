@@ -4,6 +4,7 @@
 #include <AsyncUDP.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPAsyncWebClient.h>
 #include <Wire.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
@@ -28,6 +29,7 @@ extern "C" {
 #include "xcp_bridge.h"
 #include "scenarios.h"
 #include "server.h"
+#include "sensor_request.h"
 
 //===== TODO list =====================
 // [ ] XCP нестабильно работает
@@ -139,6 +141,7 @@ void setup() {
   Serial.printf("Использовано: %d байт, (%.2f %%)\n", usedBytes, (float)(usedBytes * 100) / (float)totalBytes);
 
   serverRun(LittleFS);
+  sensor_request_init(5000);
 
   // Настройка параметров OTA
   // ArduinoOTA.setPort(3232); // Порт по умолчанию 3232
