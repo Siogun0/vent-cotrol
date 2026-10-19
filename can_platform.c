@@ -1,8 +1,8 @@
 #include "esp_twai.h"
 #include "can_platform.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/queue.h>
 
 static virtual_mailbox_t DRAM_ATTR virt_mbx[CAN_BUS_MAX][VIRT_MBX_MAX] = {0};
 static twai_node_handle_t DRAM_ATTR node_hdl[CAN_BUS_MAX] = {NULL};
@@ -48,9 +48,9 @@ static bool IRAM_ATTR twai_state_change_cb(twai_node_handle_t handle, const twai
 	return false;
 }
 
-void platform_can_rx_task(void* user_ctx) //FIXME separate task
+void platform_can_rx_task(void* user_ctx)
 {
-	uint32_t bus_id = (uint32_t)user_ctx;
+	const uint32_t bus_id = (uint32_t)user_ctx;
 	while(1)
 	{
 	  uint8_t recv_buff[8];
@@ -65,11 +65,11 @@ void platform_can_rx_task(void* user_ctx) //FIXME separate task
 	}
 }
 
-void platform_can_init(uint32_t bus_id, uint32_t bus_speed)
+void platform_can_init(uint32_t bus_id, uint32_t bus_speed, uint32_t rx_pin, uint32_t tx_pin)
 {
 	twai_onchip_node_config_t node_config = {
-    .io_cfg.tx = CAN_TX_PIN,	//TODO bus_id
-    .io_cfg.rx = CAN_RX_PIN,
+    .io_cfg.tx = tx_pin,	//TODO bus_id
+    .io_cfg.rx = rx_pin,
     .bit_timing.bitrate = bus_speed,
     .tx_queue_depth = VIRT_MBX_MAX,        // Transmit queue depth set
 	};

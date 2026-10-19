@@ -7,10 +7,6 @@
 #include <esp_twai.h>
 #include <esp_twai_onchip.h>
 
-// Назначение контактов CAN
-#define CAN_TX_PIN GPIO_NUM_1
-#define CAN_RX_PIN GPIO_NUM_2
-
 #define CAN_BUS_MAX     1
 #define VIRT_MBX_MAX    14
 
@@ -27,7 +23,7 @@ typedef struct
 
 void IRAM_ATTR platform_can_msg_recieve(uint32_t bus_id, const twai_frame_t* twai_message);
 
-void platform_can_init(uint32_t bus_id, uint32_t bus_speed);
+void platform_can_init(uint32_t bus_id, uint32_t bus_speed, uint32_t rx_pin, uint32_t tx_pin);
 
 void platform_can_init_rx_mb(uint32_t bus_id, uint32_t mbn, uint32_t id, uint32_t dlc);
 
