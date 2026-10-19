@@ -29,6 +29,14 @@ extern "C" {
 #include "scenarios.h"
 #include "server.h"
 
+//===== TODO list =====================
+// [ ] XCP нестабильно работает
+// [ ] Графика основного экрана
+// [ ] Опрос датчиков комнат
+// [ ] 
+// [ ] 
+//=====================================
+
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 //#define DS18B20_USED
@@ -134,7 +142,7 @@ void setup() {
 
   // Настройка параметров OTA
   // ArduinoOTA.setPort(3232); // Порт по умолчанию 3232
-  ArduinoOTA.setHostname("esp32-s3-panel"); // Имя устройства в сети
+  ArduinoOTA.setHostname("ventpanel"); // Имя устройства в сети
   ArduinoOTA.setPassword("1234"); // Пароль для защиты загрузки (опционально)
 
   // События процесса обновления
@@ -595,7 +603,7 @@ uint32_t lastChangingValue = 0;
 
 void loadLastState(void)
 {
-  prefs.begin("actual_state");
+  prefs.begin("actual_state", true);
   can_out.CTRL_VALVE.VALVE_1_REQ = prefs.getUChar("valve_1", 50);
   can_out.CTRL_VALVE.VALVE_2_REQ = prefs.getUChar("valve_2", 50);
   can_out.CTRL_VALVE.VALVE_3_REQ = prefs.getUChar("valve_3", 50);
@@ -620,6 +628,7 @@ void loadLastState(void)
   brightness = prefs.getUChar("brightness", 255);
   brightness_idle = prefs.getUChar("brightness_idle", 100);
   idle_timeout = prefs.getInt("idle_timeout", 30);
+  prefs.end();
 
   lastChangingValue = millis();
 }
@@ -628,6 +637,7 @@ void saveCurrentStatePoll(void)
 {
   if(millis() - lastChangingValue > 10000)
   {
+    prefs.begin("actual_state");
     prefs.putUChar("valve_1", can_out.CTRL_VALVE.VALVE_1_REQ);
     prefs.putUChar("valve_2", can_out.CTRL_VALVE.VALVE_2_REQ);
     prefs.putUChar("valve_3", can_out.CTRL_VALVE.VALVE_3_REQ);
@@ -651,6 +661,7 @@ void saveCurrentStatePoll(void)
     prefs.putUChar("brightness", brightness);
     prefs.putUChar("brightness_idle", brightness_idle);
     prefs.putInt("idle_timeout", idle_timeout);
+    prefs.end();
 
     lastChangingValue = millis();
   }

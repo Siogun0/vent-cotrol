@@ -3,8 +3,8 @@
 // extern fs::LittleFSFS LittleFS;
 
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
-AsyncEventSource events("/events"); // event source (Server-Sent events)
+// AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
+// AsyncEventSource events("/events"); // event source (Server-Sent events)
 
 
 String generateTuyaJson() {
