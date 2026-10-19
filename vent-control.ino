@@ -89,7 +89,7 @@ void setup() {
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
   // delay(2000);
   // Инициализация CAN
-  platform_can_init(CAN0, 500'000);
+  platform_can_init(CAN0, 500'000, 2, 1);
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
   can_timer_init();
   loadLastState();
