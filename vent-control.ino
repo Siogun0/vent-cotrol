@@ -202,27 +202,27 @@ void loop() {
   saveCurrentStatePoll();
 
 // TCP for XCP костыль
-  if(platform_can_is_message_arrived(0, MBN_NEXT_FREE_BUS_0))
-	{
-		uint64_t msg = platform_can_get_mb_data(0, MBN_NEXT_FREE_BUS_0);
-    // twai_message_t twai_message;
-    // twai_message.identifier = 0x7AF;
-    // twai_message.extd = 0;
-	  // twai_message.rtr = 0;
-    // twai_message.data_length_code = 8;
-    // twai_message.data[0] = (msg >> 0) & 0xFF;
-    // twai_message.data[1] = (msg >> 8) & 0xFF;
-    // twai_message.data[2] = (msg >> 16) & 0xFF;
-    // twai_message.data[3] = (msg >> 24) & 0xFF;
-    // twai_message.data[4] = (msg >> 32) & 0xFF;
-    // twai_message.data[5] = (msg >> 40) & 0xFF;
-    // twai_message.data[6] = (msg >> 48) & 0xFF;
-    // twai_message.data[7] = (msg >> 56) & 0xFF;
-    // if (xcpBridge_vent)
-		//   xcpBridge_vent->receiveCanPacket(twai_message);
-	}
+  if (xcpBridge_vent)
+  {
+    if(platform_can_is_message_arrived(CAN0, xcpBridge_vent->tx_mbn()))
+    {
+      Serial.println("mbn 5");
+      uint64_t msg = platform_can_get_mb_data(CAN0, xcpBridge_vent->tx_mbn());
+      uint8_t data[8];
+      data[0] = (msg >> 0) & 0xFF;
+      data[1] = (msg >> 8) & 0xFF;
+      data[2] = (msg >> 16) & 0xFF;
+      data[3] = (msg >> 24) & 0xFF;
+      data[4] = (msg >> 32) & 0xFF;
+      data[5] = (msg >> 40) & 0xFF;
+      data[6] = (msg >> 48) & 0xFF;
+      data[7] = (msg >> 56) & 0xFF;
+      xcpBridge_vent->receiveCanPacket(0x7AF, data, 8);
+    }
+  }
 
   ArduinoOTA.handle();
+
 }
 
 // === ОБРАБОТЧИКИ ДЕЙСТВИЙ ===
