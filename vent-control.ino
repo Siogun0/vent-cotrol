@@ -34,9 +34,10 @@ extern "C" {
 //===== TODO list =====================
 // [ ] XCP нестабильно работает
 // [ ] Графика основного экрана
-// [ ] Опрос датчиков комнат
+// [w] Опрос датчиков комнат
+// [ ] Вывод данный о /heap
 // [ ] 
-// [ ] 
+// { } Порча heap в touchScreen
 //=====================================
 
 #define FORMAT_LITTLEFS_IF_FAILED true
@@ -85,6 +86,15 @@ char wifi_ssid[32] = { 0 };
 char wifi_password[64] = { 0 };
 
 void setup() {
+// Аппаратный детектор порчи кучи (Heap Corruption Detection)
+// При любой порче контроллер упадет сразу же в месте порчи, а не потом
+// heap_caps_register_failed_alloc_callback([](size_t size, uint32_t caps, const char* function_name) {
+//     Serial.printf("MALLOC FAILED: %d bytes in %s\n", size, function_name);
+// });
+
+// Метод проверки кучи в этот момент
+// heap_caps_check_integrity_all(true);
+
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
   // delay(2000);

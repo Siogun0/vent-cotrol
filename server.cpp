@@ -1,3 +1,4 @@
+#include "esp_heap_caps.h"
 #include "server.h"
 
 // extern fs::LittleFSFS LittleFS;
@@ -168,6 +169,50 @@ bool parseTuyaCommand(const String& jsonInput) {
     return updateSuccess;
 }
 
+String printMemoryReport() {
+    // Статический буфер, чтобы String не выделял память динамически в момент сборки репорта
+    static char buffer[512];
+    int offset = 0;
+
+    // Получаем агрегированную информацию о внутренней памяти
+    multi_heap_info_t heap_info;
+    heap_caps_get_info(&heap_info, MALLOC_CAP_INTERNAL);
+
+    // Рассчитываем фрагментацию: чем ближе к 1.0, тем сильнее разбита память
+    float fragmentation = (heap_info.total_free_bytes > 0) ? (1.0f - ((float)heap_info.largest_free_block / heap_info.total_free_bytes)) : 0.0f;
+
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "===== INTERNAL MEMORY REPORT =====\n");
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Total space     : %d bytes\n", heap_info.total_free_bytes);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Total allocared : %d bytes\n", heap_info.total_allocated_bytes);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Minimum Ever    : %d bytes\n", heap_info.minimum_free_bytes);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Largest block   : %d bytes\n", heap_info.largest_free_block);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Fragmentation   : %.2f\n", fragmentation);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Allocated Blocks: %d\n", heap_info.allocated_blocks);
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Free Blocks     : %d\n", heap_info.free_blocks);
+
+    heap_caps_get_info(&heap_info, MALLOC_CAP_SPIRAM);
+    if (heap_info.total_free_bytes > 0 || heap_info.total_allocated_bytes > 0) {
+      fragmentation = (heap_info.total_free_bytes > 0) ? (1.0f - ((float)heap_info.largest_free_block / heap_info.total_free_bytes)) : 0.0f;
+
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "\n====== PSRAM MEMORY REPORT ======\n");
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Total space     : %d bytes\n", heap_info.total_free_bytes);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Total allocared : %d bytes\n", heap_info.total_allocated_bytes);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Minimum Ever    : %d bytes\n", heap_info.minimum_free_bytes);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Largest block   : %d bytes\n", heap_info.largest_free_block);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Fragmentation   : %.2f\n", fragmentation);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Allocated Blocks: %d\n", heap_info.allocated_blocks);
+      offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Free Blocks     : %d\n", heap_info.free_blocks);
+    } else {
+        offset += snprintf(buffer + offset, sizeof(buffer) - offset, "PSRAM           : Not Available\n");
+    }
+
+    // offset += snprintf(buffer + offset, sizeof(buffer) - offset, "Current TaskStk : %d words\n", uxTaskGetStackHighWaterMark(NULL));
+    snprintf(buffer + offset, sizeof(buffer) - offset, "\n===============%d==============", offset);
+
+    return String(buffer);
+}
+
+
 void serverRun(fs::FS &fs)
 {
   // Сервер HTTP
@@ -228,7 +273,7 @@ void serverRun(fs::FS &fs)
 
   // respond to GET requests on URL /heap
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+    request->send(200, "text/plain", printMemoryReport());
   });
   server.on("/api/tuya/status", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "application/json", generateTuyaJson());
