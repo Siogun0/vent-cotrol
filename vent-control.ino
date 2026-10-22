@@ -1,11 +1,10 @@
 #include <lvgl.h>
-#include <Arduino_GFX_Library.h>
 #include <WiFi.h>
+
 #include <AsyncUDP.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWebClient.h>
-#include <Wire.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
 #include <time.h>
@@ -14,7 +13,6 @@
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
 #include <ArduinoOTA.h>
-#include <TAMC_GT911.h>
 extern "C" {
 #include "can_platform.h"
 #include "can_node_panel_bus0.h"
@@ -37,7 +35,7 @@ extern "C" {
 // [w] Опрос датчиков комнат
 // [ ] Вывод данный о /heap
 // [ ] 
-// { } Порча heap в touchScreen
+// { } Порча heap в touchScreen / new i2c driver
 //=====================================
 
 #define FORMAT_LITTLEFS_IF_FAILED true
@@ -97,7 +95,7 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
-  // delay(2000);
+  // delay(5000);
   // Инициализация CAN
   platform_can_init(CAN0, 500'000, 2, 1);
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
