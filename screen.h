@@ -6,7 +6,7 @@
 
 using namespace esp_panel::board;
 using namespace esp_panel::drivers;
-
+TaskHandle_t touchTaskHandle = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////// Please update the following configuration according to your test ///////////////////////////////
@@ -14,7 +14,12 @@ using namespace esp_panel::drivers;
 #define MY_LCD_ENABLE_PRINT_FPS            (0)
 #define MY_LCD_ENABLE_DRAW_FINISH_CALLBACK (0)
 #define MY_TOUCH_ENABLE_INTERRUPT_CALLBACK (0)
-#define MY_TOUCH_READ_PERIOD_MS            (30)
+#define MY_TOUCH_ENABLE_READ_IN_TASK       (0)
+#define MY_TOUCH_POINTS_NUMBER             (1)
+#define MY_TOUCH_PERIOD                    (33)
+
+Board* board = nullptr;
+Touch* touch = nullptr;
 
 #if MY_LCD_ENABLE_PRINT_FPS
 #define MY_LCD_PRINT_FPS_PERIOD_MS         (1000)
@@ -62,7 +67,6 @@ IRAM_ATTR static bool onTouchInterruptCallback(void *user_data)
 }
 #endif
 
-Board *board = nullptr;
 
 // Размер буфера для экрана
 #define DISP_DRAW_BUF_SIZE (2 * 480 * 40)
@@ -81,30 +85,45 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
 }
 
 // --- Функция чтения координат тачскрина для LVGL v9 ---
-void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data)
+void my_touch_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
-    auto touch = board->getTouch();
-    if (touch != nullptr) {
-        // Read all touch points and buttons
-        touch->readRawData(-1, -1, MY_TOUCH_READ_PERIOD_MS);
+  static int32_t last_x = 0;
+  static int32_t last_y = 0;
 
-        std::vector<TouchPoint> points;
-        int i = 0;
-        touch->getPoints(points);
-        for (auto &point : points) {
-          Serial.printf("Touch point(%d): x %d, y %d, strength %d\n", i++, point.x, point.y, point.strength);
-        }
-        if (points.size() > 0)
-        {
-          data->state = LV_INDEV_STATE_PRESSED;
-          // Получаем координаты первой точки касания
-          data->point.x = points[0].x;
-          data->point.y = points[0].y;
-        }
-        else {
-            data->state = LV_INDEV_STATE_RELEASED;
-        }
-    }
+#if !MY_TOUCH_ENABLE_READ_IN_TASK
+  touch->readRawData(MY_TOUCH_POINTS_NUMBER, 0, 0);
+#endif //!MY_TOUCH_ENABLE_READ_IN_TASK
+
+  std::vector<TouchPoint> points;
+  touch->getPoints(points);
+        // for (auto &point : points) {
+        //   Serial.printf("Touch point(%d): x %d, y %d, strength %d\n", i++, point.x, point.y, point.strength);
+        // }
+  if (points.size() > 0)
+  {
+    data->state = LV_INDEV_STATE_PRESSED;
+    // Получаем координаты первой точки касания
+    last_x = points[0].x;
+    last_y = points[0].y;
+  }
+  else {
+    data->state = LV_INDEV_STATE_RELEASED;
+  }
+  data->point.x = last_x;
+  data->point.y = last_y;
+}
+
+void touchPollTask(void *pvParameters) {
+  while (true) {
+    touch->readRawData(MY_TOUCH_POINTS_NUMBER, 0, 0);
+    vTaskDelay(pdMS_TO_TICKS(MY_TOUCH_PERIOD));
+  }
+}
+
+void set_brightness(int value)
+{
+  auto backlight = board->getBacklight();
+  backlight->setBrightness(value * 100 / 255);
 }
 
 void screen_init(void)
@@ -114,9 +133,8 @@ void screen_init(void)
     assert(board->begin());
 
     auto backlight = board->getBacklight();
-    if (backlight != nullptr) {
-        Serial.println("Turn off the backlight");
-        backlight->off();
+    if (backlight == nullptr) {
+        set_brightness(100);
     } else {
         Serial.println("Backlight is not available");
     }
@@ -127,31 +145,33 @@ void screen_init(void)
         if ((bus_type == ESP_PANEL_BUS_TYPE_RGB) || (bus_type == ESP_PANEL_BUS_TYPE_MIPI_DSI)) {
             lcd->attachRefreshFinishCallback(onLCD_RefreshFinishCallback);
         }
-#endif
+#endif //MY_LCD_ENABLE_PRINT_FPS
 #if MY_LCD_ENABLE_DRAW_FINISH_CALLBACK
         lcd->attachDrawBitmapFinishCallback(onLCD_DrawFinishCallback);
-#endif
+#endif //MY_LCD_ENABLE_DRAW_FINISH_CALLBACK
 
-    if (backlight != nullptr) {
-        Serial.println("Turn on the backlight");
-        backlight->on();
-    }
-
-#if MY_TOUCH_ENABLE_INTERRUPT_CALLBACK
-    auto touch = board->getTouch();
+    touch = board->getTouch();
     if (touch != nullptr) {
+#if MY_TOUCH_ENABLE_READ_IN_TASK
+        xTaskCreatePinnedToCore(
+            touchPollTask,        // Функция, которая будет выполняться
+            "Touch_Task",         // Имя задачи (для отладки)
+            4096,                 // Размер стека в байтах
+            NULL,                 // Параметры задачи
+            1,                    // Приоритет задачи (1 - низкий, вполне достаточно)
+            &touchTaskHandle,     // Хэндл задачи
+            1                     // На каком ядре запускать (Ядро 0)
+        );
+#endif //MY_TOUCH_ENABLE_READ_IN_TASK
+#if MY_TOUCH_ENABLE_INTERRUPT_CALLBACK        
         if (touch->isInterruptEnabled()) {
             touch->attachInterruptCallback(onTouchInterruptCallback, nullptr);
         }
-        Serial.println("Reading touch points...");
+#endif //MY_TOUCH_ENABLE_INTERRUPT_CALLBACK
     }
-#endif    
-}
-
-void set_brightness(int value)
-{
-  auto backlight = board->getBacklight();
-  backlight->setBrightness(value * 100 / 255);
+    else {
+      Serial.println("Touch not init!");
+    }
 }
 
 #endif //SCREEN_H

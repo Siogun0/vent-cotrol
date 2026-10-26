@@ -114,7 +114,7 @@ void setup() {
   // Регистрация тачскрина в LVGL
   lv_indev_t * indev = lv_indev_create();
   lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
-  lv_indev_set_read_cb(indev, my_touchpad_read);
+  lv_indev_set_read_cb(indev, my_touch_read);
 
   // Запуск графического интерфейса EEZ
   ui_init();
