@@ -108,7 +108,7 @@ void setup() {
   lv_init();
   lv_tick_set_cb(millis);
   // Регистрация экрана
-  lv_display_t * display = lv_display_create(480, 480);
+  lv_display_t * display = lv_display_create(lcd->getFrameWidth(), lcd->getFrameHeight());
   lv_display_set_buffers(display, disp_draw_buf, NULL, DISP_DRAW_BUF_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
   lv_display_set_flush_cb(display, my_disp_flush);
   // Регистрация тачскрина в LVGL

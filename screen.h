@@ -20,6 +20,8 @@ TaskHandle_t touchTaskHandle = NULL;
 
 Board* board = nullptr;
 Touch* touch = nullptr;
+LCD* lcd = nullptr;
+Backlight* backlight = nullptr;
 
 #if MY_LCD_ENABLE_PRINT_FPS
 #define MY_LCD_PRINT_FPS_PERIOD_MS         (1000)
@@ -79,7 +81,7 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
     const int offsetx2 = area->x2;
     const int offsety1 = area->y1;
     const int offsety2 = area->y2;
-  board->getLCD()->drawBitmap(offsetx1, offsety1, offsetx2 - offsetx1 + 1, offsety2 - offsety1 + 1, (const uint8_t *)px_map);
+  lcd->drawBitmap(offsetx1, offsety1, offsetx2 - offsetx1 + 1, offsety2 - offsety1 + 1, (const uint8_t *)px_map);
 
   lv_display_flush_ready(disp);
 }
@@ -130,14 +132,21 @@ void screen_init(void)
 {
     // Statically load the default board configuration
     board = new Board();
-    assert(board->begin());
-
-    auto backlight = board->getBacklight();
-    if (backlight == nullptr) {
-        set_brightness(100);
-    } else {
-        Serial.println("Backlight is not available");
+    if (board->begin())
+    {
+      lcd = board->getLCD();
+      touch = board->getTouch();
+      backlight = board->getBacklight();
+      if (lcd == nullptr) Serial.println("LCD is not available");
+      if (touch == nullptr) Serial.println("Touch is not available");
+      if (backlight == nullptr) Serial.println("Backlight is not available");
     }
+    else
+    {
+      Serial.println("Board is not available");
+    }
+
+  set_brightness(255);
 
 #if MY_LCD_ENABLE_PRINT_FPS
         // Only RGB and MIPI-DSI bus types support refresh finish callback
@@ -150,7 +159,6 @@ void screen_init(void)
         lcd->attachDrawBitmapFinishCallback(onLCD_DrawFinishCallback);
 #endif //MY_LCD_ENABLE_DRAW_FINISH_CALLBACK
 
-    touch = board->getTouch();
     if (touch != nullptr) {
 #if MY_TOUCH_ENABLE_READ_IN_TASK
         xTaskCreatePinnedToCore(
@@ -168,9 +176,6 @@ void screen_init(void)
             touch->attachInterruptCallback(onTouchInterruptCallback, nullptr);
         }
 #endif //MY_TOUCH_ENABLE_INTERRUPT_CALLBACK
-    }
-    else {
-      Serial.println("Touch not init!");
     }
 }
 
