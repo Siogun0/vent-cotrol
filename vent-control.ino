@@ -33,9 +33,9 @@ extern "C" {
 // [ ] XCP нестабильно работает
 // [ ] Графика основного экрана
 // [w] Опрос датчиков комнат
-// [ ] Вывод данный о /heap
-// [ ] 
-// { } Порча heap в touchScreen / new i2c driver
+// [x] Вывод данный о /heap
+// [ ] Плавное затухание подсветки
+// {x} Порча heap в touchScreen / new i2c driver / new Esp Panel
 //=====================================
 
 #define FORMAT_LITTLEFS_IF_FAILED true
@@ -522,7 +522,7 @@ int32_t get_var_brightness() {
 }
 
 void set_var_brightness(int32_t value) {
-    brightness = constrain(value, 0, 255);
+    brightness = constrain(value, 0, 100);
     set_brightness(brightness);
     notifyChageValue();
 }
@@ -532,7 +532,7 @@ int32_t get_var_brightness_idle() {
 }
 
 void set_var_brightness_idle(int32_t value) {
-    brightness_idle = constrain(value, 0, 255);
+    brightness_idle = constrain(value, 0, 100);
     notifyChageValue();
 }
 

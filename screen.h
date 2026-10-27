@@ -124,8 +124,7 @@ void touchPollTask(void *pvParameters) {
 
 void set_brightness(int value)
 {
-  auto backlight = board->getBacklight();
-  backlight->setBrightness(value * 100 / 255);
+  backlight->setBrightness(value);
 }
 
 void screen_init(void)
@@ -146,7 +145,7 @@ void screen_init(void)
       Serial.println("Board is not available");
     }
 
-  set_brightness(255);
+  set_brightness(100);
 
 #if MY_LCD_ENABLE_PRINT_FPS
         // Only RGB and MIPI-DSI bus types support refresh finish callback
