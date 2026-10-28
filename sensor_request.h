@@ -11,7 +11,9 @@ AsyncHttpClient client;
 TaskHandle_t sensor_request_Handle = NULL;
 
 // Внутренняя структура для хранения данных радара
-typedef LD2410Types::DetectionData RadarData;
+// typedef LD2410Types::DetectionData RadarData;
+struct RadarData : public LD2410Types::DetectionData
+{};
 
 RadarData sensor_bedroom;
 
