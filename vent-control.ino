@@ -1,11 +1,10 @@
 #include <lvgl.h>
-#include <Arduino_GFX_Library.h>
 #include <WiFi.h>
+
 #include <AsyncUDP.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncWebClient.h>
-#include <Wire.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
 #include <time.h>
@@ -14,7 +13,6 @@
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
 #include <ArduinoOTA.h>
-#include <TAMC_GT911.h>
 extern "C" {
 #include "can_platform.h"
 #include "can_node_panel_bus0.h"
@@ -35,9 +33,9 @@ extern "C" {
 // [ ] XCP нестабильно работает
 // [ ] Графика основного экрана
 // [w] Опрос датчиков комнат
-// [ ] Вывод данный о /heap
-// [ ] 
-// { } Порча heap в touchScreen
+// [x] Вывод данный о /heap
+// [ ] Плавное затухание подсветки
+// {x} Порча heap в touchScreen / new i2c driver / new Esp Panel
 //=====================================
 
 #define FORMAT_LITTLEFS_IF_FAILED true
@@ -97,7 +95,7 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("\n=== ЗАПУСК ПЛАТЫ С ARDUINO_RGB_DISPLAY ===");
-  // delay(2000);
+  // delay(5000);
   // Инициализация CAN
   platform_can_init(CAN0, 500'000, 2, 1);
   can_node_panel_bus0_init(0, 0, 0, &can_out, &can_in);
@@ -110,13 +108,13 @@ void setup() {
   lv_init();
   lv_tick_set_cb(millis);
   // Регистрация экрана
-  lv_display_t * display = lv_display_create(480, 480);
+  lv_display_t * display = lv_display_create(lcd->getFrameWidth(), lcd->getFrameHeight());
   lv_display_set_buffers(display, disp_draw_buf, NULL, DISP_DRAW_BUF_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
   lv_display_set_flush_cb(display, my_disp_flush);
   // Регистрация тачскрина в LVGL
   lv_indev_t * indev = lv_indev_create();
   lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
-  lv_indev_set_read_cb(indev, my_touchpad_read);
+  lv_indev_set_read_cb(indev, my_touch_read);
 
   // Запуск графического интерфейса EEZ
   ui_init();
@@ -524,7 +522,7 @@ int32_t get_var_brightness() {
 }
 
 void set_var_brightness(int32_t value) {
-    brightness = constrain(value, 0, 255);
+    brightness = constrain(value, 0, 100);
     set_brightness(brightness);
     notifyChageValue();
 }
@@ -534,7 +532,7 @@ int32_t get_var_brightness_idle() {
 }
 
 void set_var_brightness_idle(int32_t value) {
-    brightness_idle = constrain(value, 0, 255);
+    brightness_idle = constrain(value, 0, 100);
     notifyChageValue();
 }
 

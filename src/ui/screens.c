@@ -1087,7 +1087,7 @@ void create_screen_settings() {
             objects.brightnes_slider = obj;
             lv_obj_set_pos(obj, 173, 151);
             lv_obj_set_size(obj, 250, 10);
-            lv_slider_set_range(obj, 50, 255);
+            lv_slider_set_range(obj, 20, 100);
             lv_obj_add_event_cb(obj, event_handler_cb_settings_brightnes_slider, LV_EVENT_ALL, flowState);
             lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
         }
@@ -1097,8 +1097,9 @@ void create_screen_settings() {
             objects.brightnes_idle_slider = obj;
             lv_obj_set_pos(obj, 174, 193);
             lv_obj_set_size(obj, 250, 10);
-            lv_slider_set_range(obj, 50, 255);
+            lv_slider_set_range(obj, 20, 100);
             lv_obj_add_event_cb(obj, event_handler_cb_settings_brightnes_idle_slider, LV_EVENT_ALL, flowState);
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_GESTURE_BUBBLE);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
