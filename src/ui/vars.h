@@ -20,13 +20,21 @@ typedef enum {
     status_color_CLEAR = 6
 } status_color;
 
+typedef enum {
+    human_presence_NO_DATA = 0,
+    human_presence_NONE = 1,
+    human_presence_PRESENCE = 2,
+    human_presence_MOVING = 3
+} human_presence;
+
 // Flow global variables
 
 enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0,
     FLOW_GLOBAL_VARIABLE_SCREENS_ARRAY = 1,
     FLOW_GLOBAL_VARIABLE_SCREEN_INDEX = 2,
-    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3
+    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3,
+    FLOW_GLOBAL_VARIABLE_ROOMS_STATE = 4
 };
 
 // Native global variables

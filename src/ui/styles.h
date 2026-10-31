@@ -32,6 +32,11 @@ lv_style_t *get_style_label_white_MAIN_DEFAULT();
 void add_style_label_white(lv_obj_t *obj);
 void remove_style_label_white(lv_obj_t *obj);
 
+// Style: label_blue
+lv_style_t *get_style_label_blue_MAIN_DEFAULT();
+void add_style_label_blue(lv_obj_t *obj);
+void remove_style_label_blue(lv_obj_t *obj);
+
 #ifdef __cplusplus
 }
 #endif
