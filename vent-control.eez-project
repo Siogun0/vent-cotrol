@@ -365,13 +365,189 @@
         "native": true
       },
       {
-        "objID": "144d147e-e6f7-489f-905d-7fe6567d6f8b",
-        "name": "rooms_state",
-        "type": "array:struct:room_state",
-        "size": null,
-        "defaultValue": "null",
+        "objID": "5e279072-4c7a-4e99-d19b-a5c82a579e2e",
+        "name": "family_room_aqi_str",
+        "type": "string",
+        "defaultValue": "\"\"",
         "persistent": false,
-        "native": false
+        "native": true
+      },
+      {
+        "objID": "60b8e420-63b5-4567-a6b7-cf924f2335e8",
+        "name": "family_room_temp_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "859d5aa7-1853-46b1-df07-3aaf3f95c294",
+        "name": "family_room_humid_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "175f2e4a-f11b-4540-d540-2768d47da2b3",
+        "name": "family_room_tvoc_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "70c023d9-d4e2-4759-92c1-9a195a4d770c",
+        "name": "family_room_eco2_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "c85dcb9a-1df8-41e8-9d1e-814a2c52573d",
+        "name": "master_bedroom_aqi_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "1e25d708-9bd1-4084-e274-46271023e347",
+        "name": "master_bedroom_temp_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "85f70a88-3773-4e8f-8e3a-98ac1ea88489",
+        "name": "master_bedroom_humid_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "b4fe1df7-023f-4910-be7e-0018ccf67003",
+        "name": "master_bedroom_tvoc_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "a8a23a0a-0232-4491-daa5-65fa502e0e8f",
+        "name": "master_bedroom_eco2_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "803e22af-ab53-4a86-f5ce-edce0d71122e",
+        "name": "childroom_aqi_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "bb6eec32-877d-445e-9b47-b7b580ef3285",
+        "name": "childroom_temp_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "85958298-855f-4c66-ffbf-980d8bce9a13",
+        "name": "childroom_humid_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "15dd251b-c3fb-4376-e965-fcac4bdbbe5c",
+        "name": "childroom_tvoc_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "a96b4b2a-e395-4f9e-9e6d-719955989cf0",
+        "name": "childroom_eco2_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "40f7d33a-e386-438f-da58-99e1e5284941",
+        "name": "family_room_flow_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "254f4859-10b2-4007-fd86-9c5c77a8c538",
+        "name": "master_bedroom_flow_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "03f7ea59-3df0-46de-c41e-9b411952f8ed",
+        "name": "childroom_flow_str",
+        "type": "string",
+        "size": null,
+        "defaultValue": "\"\"",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "c7bbd118-4e41-435d-e5d5-2113d6f05f83",
+        "name": "family_room_moving",
+        "type": "enum:human_presence",
+        "defaultValue": "human_presence.NO_DATA",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "9e339426-9b02-4673-bdd7-99ce68606358",
+        "name": "master_bedroom_moving",
+        "type": "enum:human_presence",
+        "defaultValue": "human_presence.NO_DATA",
+        "persistent": false,
+        "native": true
+      },
+      {
+        "objID": "63c4f336-4e7e-4054-ad7d-ce0856d6f2f5",
+        "name": "childroom_moving",
+        "type": "enum:human_presence",
+        "defaultValue": "human_presence.NO_DATA",
+        "persistent": false,
+        "native": true
       }
     ],
     "structures": [
@@ -1813,7 +1989,7 @@
                   "type": "LVGLLabelWidget",
                   "left": 113,
                   "top": 41,
-                  "width": 39,
+                  "width": 55,
                   "height": 24,
                   "customInputs": [],
                   "customOutputs": [],
@@ -1855,15 +2031,16 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "35°C",
-                  "textType": "literal",
+                  "text": "family_room_temp_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "25.5°C"
                 },
                 {
                   "objID": "3f2d0716-54fb-4da5-924f-b7cc0f664061",
                   "type": "LVGLImageWidget",
-                  "left": 177,
+                  "left": 179,
                   "top": 42,
                   "width": 24,
                   "height": 24,
@@ -1956,10 +2133,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "68%",
-                  "textType": "literal",
+                  "text": "family_room_humid_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "65%"
                 },
                 {
                   "objID": "597eb337-90ea-4dfb-8b8e-570f6245949d",
@@ -2051,10 +2229,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "10230 ppm",
-                  "textType": "literal",
+                  "text": "family_room_eco2_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "10230 ppm"
                 },
                 {
                   "objID": "7d4c64b1-ae7e-4871-e714-8eb6c3052663",
@@ -2146,10 +2325,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "32000 ppm",
-                  "textType": "literal",
+                  "text": "family_room_tvoc_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "32000 ppm"
                 },
                 {
                   "objID": "30a384d5-a5a4-4a9c-bcf4-e5cd4e1b106f",
@@ -2240,10 +2420,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "1",
-                  "textType": "literal",
+                  "text": "family_room_aqi_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "1"
                 },
                 {
                   "objID": "ccd44cdf-e245-41a3-a3cf-276e48dc2e65",
@@ -2340,10 +2521,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "25 м³/ч",
-                  "textType": "literal",
+                  "text": "family_room_flow_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "25 м³/ч"
                 },
                 {
                   "objID": "31397f39-ba75-41e1-eca9-8ced27af5850",
@@ -2368,8 +2550,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": false,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "family_room_moving != human_presence.PRESENCE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -2418,8 +2600,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "family_room_moving != human_presence.NONE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -2468,8 +2650,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "family_room_moving != human_presence.MOVING",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -2699,15 +2881,16 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "35°C",
-                  "textType": "literal",
+                  "text": "master_bedroom_temp_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "35°C"
                 },
                 {
                   "objID": "bda500bf-b3a5-47ea-b738-b679e1773bdb",
                   "type": "LVGLImageWidget",
-                  "left": 177,
+                  "left": 179,
                   "top": 42,
                   "width": 24,
                   "height": 24,
@@ -2800,10 +2983,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "68%",
-                  "textType": "literal",
+                  "text": "master_bedroom_humid_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "68%"
                 },
                 {
                   "objID": "2a06e05e-c624-41b6-edc6-6a17a24c919a",
@@ -2853,7 +3037,7 @@
                   "type": "LVGLLabelWidget",
                   "left": 262,
                   "top": 76,
-                  "width": 90,
+                  "width": 80,
                   "height": 24,
                   "customInputs": [],
                   "customOutputs": [],
@@ -2895,10 +3079,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "10230 ppm",
-                  "textType": "literal",
+                  "text": "master_bedroom_eco2_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "1130 ppm"
                 },
                 {
                   "objID": "9fcc6ae4-bedd-4631-eab2-1e5f5d893260",
@@ -2990,10 +3175,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "32000 ppm",
-                  "textType": "literal",
+                  "text": "master_bedroom_tvoc_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "12000 ppm"
                 },
                 {
                   "objID": "75e67c19-1c5e-4b48-9a49-330d538a1686",
@@ -3084,10 +3270,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "1",
-                  "textType": "literal",
+                  "text": "master_bedroom_aqi_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "2"
                 },
                 {
                   "objID": "5ba62151-41f0-43c1-c55a-e8df43056466",
@@ -3143,7 +3330,7 @@
                   "type": "LVGLLabelWidget",
                   "left": 292,
                   "top": 41,
-                  "width": 62,
+                  "width": 52,
                   "height": 24,
                   "customInputs": [],
                   "customOutputs": [],
@@ -3184,10 +3371,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "25 м³/ч",
-                  "textType": "literal",
+                  "text": "master_bedroom_flow_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "5 м³/ч"
                 },
                 {
                   "objID": "439b671f-4499-43f4-bc04-b5949e047b9a",
@@ -3212,8 +3400,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "master_bedroom_moving != human_presence.PRESENCE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -3262,8 +3450,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "master_bedroom_moving != human_presence.NONE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -3312,8 +3500,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": false,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "master_bedroom_moving != human_presence.MOVING",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -3500,7 +3688,7 @@
                   "type": "LVGLLabelWidget",
                   "left": 113,
                   "top": 41,
-                  "width": 39,
+                  "width": 55,
                   "height": 24,
                   "customInputs": [],
                   "customOutputs": [],
@@ -3542,15 +3730,16 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "35°C",
-                  "textType": "literal",
+                  "text": "childroom_temp_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "20.2°C"
                 },
                 {
                   "objID": "31e1afb9-c971-4c6f-ebef-46f9c911f664",
                   "type": "LVGLImageWidget",
-                  "left": 177,
+                  "left": 179,
                   "top": 42,
                   "width": 24,
                   "height": 24,
@@ -3643,10 +3832,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "68%",
-                  "textType": "literal",
+                  "text": "childroom_humid_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "50%"
                 },
                 {
                   "objID": "98b430bd-7455-4902-fa99-13ff60f598cd",
@@ -3738,10 +3928,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "10230 ppm",
-                  "textType": "literal",
+                  "text": "childroom_eco2_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "10000 ppm"
                 },
                 {
                   "objID": "f68d72eb-b08b-45b0-b7ca-5a411dba4060",
@@ -3833,10 +4024,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "32000 ppm",
-                  "textType": "literal",
+                  "text": "childroom_tvoc_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "22000 ppm"
                 },
                 {
                   "objID": "da27b61b-7d88-4824-d8da-c41ce200676a",
@@ -3927,10 +4119,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "1",
-                  "textType": "literal",
+                  "text": "childroom_aqi_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "3"
                 },
                 {
                   "objID": "5264e0cb-a6cd-4521-b3e6-52b6470e8cda",
@@ -4027,10 +4220,11 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "25 м³/ч",
-                  "textType": "literal",
+                  "text": "childroom_flow_str",
+                  "textType": "expression",
                   "longMode": "WRAP",
-                  "recolor": false
+                  "recolor": false,
+                  "previewValue": "15 м³/ч"
                 },
                 {
                   "objID": "02505671-12cf-46c1-b74d-f77f1f95c875",
@@ -4055,8 +4249,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "childroom_moving != human_presence.PRESENCE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -4105,7 +4299,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "childroom_moving != human_presence.NONE",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",
@@ -4154,8 +4349,8 @@
                   "heightUnit": "content",
                   "children": [],
                   "widgetFlags": "ADV_HITTEST|CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-                  "hiddenFlag": true,
-                  "hiddenFlagType": "literal",
+                  "hiddenFlag": "childroom_moving != human_presence.MOVING",
+                  "hiddenFlagType": "expression",
                   "clickableFlagType": "literal",
                   "flagScrollbarMode": "",
                   "flagScrollDirection": "",

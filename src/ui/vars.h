@@ -33,8 +33,7 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_POWER_IS_VISIBLE = 0,
     FLOW_GLOBAL_VARIABLE_SCREENS_ARRAY = 1,
     FLOW_GLOBAL_VARIABLE_SCREEN_INDEX = 2,
-    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3,
-    FLOW_GLOBAL_VARIABLE_ROOMS_STATE = 4
+    FLOW_GLOBAL_VARIABLE_SCENARIOS_NAME_ARRAY = 3
 };
 
 // Native global variables
@@ -93,6 +92,48 @@ extern float get_var_current();
 extern void set_var_current(float value);
 extern float get_var_power();
 extern void set_var_power(float value);
+extern const char *get_var_family_room_aqi_str();
+extern void set_var_family_room_aqi_str(const char *value);
+extern const char *get_var_family_room_temp_str();
+extern void set_var_family_room_temp_str(const char *value);
+extern const char *get_var_family_room_humid_str();
+extern void set_var_family_room_humid_str(const char *value);
+extern const char *get_var_family_room_tvoc_str();
+extern void set_var_family_room_tvoc_str(const char *value);
+extern const char *get_var_family_room_eco2_str();
+extern void set_var_family_room_eco2_str(const char *value);
+extern const char *get_var_master_bedroom_aqi_str();
+extern void set_var_master_bedroom_aqi_str(const char *value);
+extern const char *get_var_master_bedroom_temp_str();
+extern void set_var_master_bedroom_temp_str(const char *value);
+extern const char *get_var_master_bedroom_humid_str();
+extern void set_var_master_bedroom_humid_str(const char *value);
+extern const char *get_var_master_bedroom_tvoc_str();
+extern void set_var_master_bedroom_tvoc_str(const char *value);
+extern const char *get_var_master_bedroom_eco2_str();
+extern void set_var_master_bedroom_eco2_str(const char *value);
+extern const char *get_var_childroom_aqi_str();
+extern void set_var_childroom_aqi_str(const char *value);
+extern const char *get_var_childroom_temp_str();
+extern void set_var_childroom_temp_str(const char *value);
+extern const char *get_var_childroom_humid_str();
+extern void set_var_childroom_humid_str(const char *value);
+extern const char *get_var_childroom_tvoc_str();
+extern void set_var_childroom_tvoc_str(const char *value);
+extern const char *get_var_childroom_eco2_str();
+extern void set_var_childroom_eco2_str(const char *value);
+extern const char *get_var_family_room_flow_str();
+extern void set_var_family_room_flow_str(const char *value);
+extern const char *get_var_master_bedroom_flow_str();
+extern void set_var_master_bedroom_flow_str(const char *value);
+extern const char *get_var_childroom_flow_str();
+extern void set_var_childroom_flow_str(const char *value);
+extern human_presence get_var_family_room_moving();
+extern void set_var_family_room_moving(human_presence value);
+extern human_presence get_var_master_bedroom_moving();
+extern void set_var_master_bedroom_moving(human_presence value);
+extern human_presence get_var_childroom_moving();
+extern void set_var_childroom_moving(human_presence value);
 
 #ifdef __cplusplus
 }
